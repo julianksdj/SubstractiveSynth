@@ -10,6 +10,7 @@
 
 #include <JuceHeader.h>
 #include "PluginProcessor.h"
+#include "CustomLookAndFeel.h"
 
 //==============================================================================
 /**
@@ -31,13 +32,14 @@ public:
     void sliderValueChanged (juce::Slider *slider) override;
     void handleNoteOn (juce::MidiKeyboardState* source, int midiChannel, int midiNoteNumber, float velocity) override;
     void handleNoteOff (juce::MidiKeyboardState* source, int midiChannel, int midiNoteNumber, float velocity) override;
-    void waveMenuChanged();
-private:
-    // This reference is provided as a quick way for your editor to
-    // access the processor object that created it.
-    SubstractiveSynthAudioProcessor& audioProcessor;
+    void updateToggleState (juce::Button* button, juce::String name);
     
-    //==============================================================================
+private:
+    
+    CustomLookAndFeel customLook;
+    SubstractiveSynthAudioProcessor& audioProcessor;
+
+    juce::Image background = juce::ImageCache::getFromMemory (BinaryData::background_png, BinaryData::background_pngSize);
     
     //Amp Envelope
     juce::Slider carrierASlider;
@@ -54,10 +56,6 @@ private:
     juce::Label cutLabel;
     juce::Slider resKnob;
     juce::Label resLabel;
-    
-    //Waveform selection
-    juce::Label waveLabel;
-    juce::ComboBox waveMenu;
 
     //Fitler envelope
     juce::Slider envKnob;
@@ -73,6 +71,43 @@ private:
 
     juce::MidiKeyboardState keyboardState;
     juce::MidiKeyboardComponent keyboardComponent;
+    
+    //waveform buttons
+    juce::ToggleButton pulseButton1;
+    juce::ToggleButton sawButton1;
+    juce::ToggleButton sinButton1;
+    juce::ToggleButton pulseButton2;
+    juce::ToggleButton sawButton2;
+    juce::ToggleButton sinButton2;
+    int waveLed1;
+    int waveLed2;
+    juce::Image ledOn = juce::ImageCache::getFromMemory (BinaryData::led_on_png, BinaryData::led_on_pngSize);
+    juce::Image ledOff = juce::ImageCache::getFromMemory (BinaryData::led_off_png, BinaryData::led_off_pngSize);
+    juce::Label waveLabel;
+    
+    //mixer
+    juce::Slider mixSlider;
+    juce::Label mixLabel1;
+    juce::Label mixLabel2;
+    
+    //pitch control
+    juce::Label octLabel;
+    juce::Label semiLabel;
+    juce::Label fineLabel;
+    juce::Slider octKnob1;
+    juce::Slider semiKnob1;
+    juce::Slider fineKnob1;
+    juce::Slider octKnob2;
+    juce::Slider semiKnob2;
+    juce::Slider fineKnob2;
+    
+    //lfo
+    juce::Slider lfoFreqSlider;
+    juce::Slider lfoAmpSlider;
+    juce::Slider lfoFilterSlider;
+    juce::Label lfoFreqLabel;
+    juce::Label lfoAmpLabel;
+    juce::Label lfoFilterLabel;
     
     juce::AudioDeviceManager deviceManager;
 

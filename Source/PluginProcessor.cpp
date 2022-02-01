@@ -97,21 +97,35 @@ void SubstractiveSynthAudioProcessor::prepareToPlay (double sampleRate, int samp
     // initialisation that you need..
     currentSampleRate = sampleRate;
     
-    attack = 0.0001;
-    decay = 0.0001;
-    sustain = 0.125;
-    release = 0.0001;
+    attack = 0.0001f;
+    decay = 0.0001f;
+    sustain = 0.125f;
+    release = 0.0001f;
     
-    setCut(20000.0);
-    setRes(0.5);
+    setCut(20000.f);
+    setRes(0.5f);
     
-    attackF = 0.0001;
-    decayF = 0.0001;
-    sustainF = 20000.0;
-    releaseF = 0.0001;
-    envAmount = 0.0;
+    attackF = 0.0001f;
+    decayF = 0.0001f;
+    sustainF = 1.f;
+    releaseF = 0.0001f;
+    envAmount = 0.f;
     
-    waveform = 1;
+    waveform1 = 1;
+    waveform2 = 3;
+    
+    mix = 0.5f;
+    
+    octave[0] = 0;
+    octave[1] = 0;
+    semitone[0] = 0;
+    semitone[1] = 0;
+    fine[0] = 0;
+    fine[1] = 0;
+    
+    lfoFreq = 1.f;
+    lfoAmp = 0.f;
+
 }
 
 void SubstractiveSynthAudioProcessor::releaseResources()
@@ -186,14 +200,13 @@ void SubstractiveSynthAudioProcessor::processBlock (juce::AudioBuffer<float>& bu
             for (auto voiceIndex = 0; voiceIndex < voices.size(); ++voiceIndex)
             {
                 auto* voice = voices.getUnchecked(voiceIndex);
-                auto ampEnv = voice->getEnvelope();
-                auto filtEnv = voice->getFilterEnvelope();
+                auto ampEnv = voice->getEnvelope(channel);
+                auto filtEnv = voice->getFilterEnvelope(channel);
                 if(voice->isActive())
                 {
                     auto currentSample = voice->getNextSample(channel)*ampEnv;
                     float filteredSample = voice->processSample(currentSample, channel, filtEnv);// filter
                     sumOsc += filteredSample;
-                    //sumOsc += currentSample;
                 }
                 else
                     voices.remove(voiceIndex);

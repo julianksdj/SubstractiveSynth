@@ -14,6 +14,7 @@
 #include "SawOscillator.h"
 #include "Filter.h"
 #include "FilterEnvelope.h"
+#include "LFO.h"
 
 class Voice
 {
@@ -23,18 +24,21 @@ public:
     // voice features functions
     bool isActive ()
     {
-        if (env.getCarrAmp()<=0.0000001)
+        if (!env.isActive())
             return false;
         else
             return true;
     };
     
     // Oscillator functions
-    void setFrequency (float f)
+    void setFrequency (float f1, float f2)
     {
-        oscSquare.setFrequency(f);
-        oscSine.setFrequency(f);
-        oscSaw.setFrequency(f);
+        oscSquare1.setFrequency(f1);
+        oscSine1.setFrequency(f1);
+        oscSaw1.setFrequency(f1);
+        oscSquare2.setFrequency(f2);
+        oscSine2.setFrequency(f2);
+        oscSaw2.setFrequency(f2);
     };
     /*void setFrequencyFM (float f)
     {
@@ -42,30 +46,54 @@ public:
     };*/
     float getNextSample(int channel) //noexcept
     {
-        if (waveform == 0)
-            return oscSquare.getNextSample(channel);
-        else if (waveform == 1)
-            return oscSine.getNextSample(channel);
-        else if (waveform == 2)
-            return oscSaw.getNextSample(channel);
-        return 0.0;
+        float sample1 = 0.f;
+        float sample2 = 0.f;
+        if (waveform1 == 1)
+            sample1 = oscSquare1.getNextSample(channel);
+        else if (waveform1 == 2)
+            sample1 = oscSaw1.getNextSample(channel);
+        else if (waveform1 == 3)
+            sample1 =oscSine1.getNextSample(channel);
+        
+        if (waveform2 == 1)
+            sample2 = oscSquare2.getNextSample(channel);
+        else if (waveform2 == 2)
+            sample2 = oscSaw2.getNextSample(channel);
+        else if (waveform2 == 3)
+            sample2 = oscSine2.getNextSample(channel);
+        
+        //return sample1 * mix + sample2 * (1.f-mix); //mix of both oscillators
+        float mixx = sample1 * mix + sample2 * (1.f-mix);
+        //float lfoMix = mixx * lfo.getNextSample(channel);
+        float lfoMix = mixx * (1 - lfo.getNextSample(channel)*lfoAmp);
+        
+        return lfoMix;
     };
     float getFrequency()
     {
-        if (waveform == 0)
-            return oscSquare.getFrequency();
-        else if (waveform == 1)
-            return oscSine.getFrequency();
-        else if (waveform == 2)
-            return oscSaw.getFrequency();
+        if (waveform1 == 1)
+            return oscSquare1.getFrequency();
+        else if (waveform1 == 2)
+            return oscSaw1.getFrequency();
+        else if (waveform1 == 3)
+            return oscSine1.getFrequency();
+        /*else if (waveform2 == 1)
+            return oscSquare2.getFrequency();
+        else if (waveform2 == 2)
+            return oscSaw2.getFrequency();
+        else if (waveform2 == 3)
+            return oscSine2.getFrequency();*/
         return 0.0;
             
     };
     void setCarrFreq(float m)
     {
-        oscSquare.setCarrFreq(m);
-        oscSine.setCarrFreq(m);
-        oscSaw.setCarrFreq(m);
+        oscSquare1.setCarrFreq(m);
+        oscSine1.setCarrFreq(m);
+        oscSaw1.setCarrFreq(m);
+        oscSquare2.setCarrFreq(m);
+        oscSine2.setCarrFreq(m);
+        oscSaw2.setCarrFreq(m);
             
     };
     /*void setModFreq(float m)
@@ -78,9 +106,9 @@ public:
     };*/
 
     // Envelope functions
-    float getEnvelope()
+    float getEnvelope(int channel)
     {
-        return env.getEnvelope();
+        return env.getEnvelope(channel);
     };
     void setAttack(float a)
     {
@@ -98,13 +126,13 @@ public:
     {
         env.setRelease(r);
     };
-    void setSampleRate(int sr)
+//    void setSampleRate(int sr)
+//    {
+//        env.setSampleRate(sr);
+//    };
+    void setCarrAmp(float a, int channel)
     {
-        env.setSampleRate(sr);
-    };
-    void setCarrAmp(float a)
-    {
-        env.setCarrAmp(a);
+        env.setCarrAmp(a, channel);
     };
     void setNoteOn(bool n)
     {
@@ -143,16 +171,24 @@ public:
     };
     void setSampleRate(float sr)
     {
-        oscSquare.setSampleRate(sr);
-        oscSine.setSampleRate(sr);
-        oscSaw.setSampleRate(sr);
+        oscSquare1.setSampleRate(sr);
+        oscSine1.setSampleRate(sr);
+        oscSaw1.setSampleRate(sr);
+        oscSquare2.setSampleRate(sr);
+        oscSine2.setSampleRate(sr);
+        oscSaw2.setSampleRate(sr);
         env.setSampleRate(sr);
         filter.setSampleRate(sr);
         filterEnv.setSampleRate(sr);
+        lfo.setSampleRate(sr);
     };
-    void setWaveform(int w)
+    void setWaveform1(int w)
     {
-        waveform = w;
+        waveform1 = w;
+    };
+    void setWaveform2(int w)
+    {
+        waveform2 = w;
     };
     
     // Filter Envelope
@@ -172,9 +208,9 @@ public:
     {
         filterEnv.setRelease(r);
     };
-    float getFilterEnvelope()
+    float getFilterEnvelope(int channel)
     {
-        return filterEnv.getEnvelope();
+        return filterEnv.getEnvelope(channel);
     };
     void setFilterEnv(float env){
         filterEnv.setFilterEnv(env);
@@ -182,16 +218,36 @@ public:
     void initFilterEnv(float cutoff, float env){
         filterEnv.initFilterEnv(cutoff,env);
     };
+    void setMix(float m)
+    {
+        mix = m;
+    };
+    
+    //LFO
+    void setFrequencyLFO(float f)
+    {
+        lfo.setFrequency(f);
+    };
+    void setLfoAmp(float a)
+    {
+        lfoAmp = a;
+    };
+    
     
 private:
-    Envelope env;
-    SineOscillator oscSine;
-    SquareOscillator oscSquare;
-    SawOscillator oscSaw;
+    SineOscillator oscSine1;
+    SquareOscillator oscSquare1;
+    SawOscillator oscSaw1;
+    SineOscillator oscSine2;
+    SquareOscillator oscSquare2;
+    SawOscillator oscSaw2;
     Filter filter;
-    int waveform;
+    int waveform1, waveform2;
+    Envelope env;
     FilterEnvelope filterEnv;
-    
+    float mix;
+    SineOscillator lfo;
+    float lfoAmp;
 };
 
 #endif /* Voice_h */

@@ -28,7 +28,7 @@ public:
         this->updateFilter();
     };
     void updateFilter(){
-        // Resonator filter formulas from the book (chapter 6.3.1)
+        // Resonator filter formulas from Will Pirkle's book (chapter 6.3.1)
         frec = juce::MathConstants<float>::twoPi * cut / currentSampleRate;
         bw = cut / res;
         b2L = exp(- juce::MathConstants<float>::twoPi * bw / currentSampleRate);

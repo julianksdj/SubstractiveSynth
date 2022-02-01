@@ -14,48 +14,44 @@ class Envelope
 public:
     Envelope()
     {
-        envCount = 0;
+        envCount[0] = 0;
+        envCount[1] = 0;
     };
 
-    float getEnvelope()
+    float getEnvelope(int channel)
     {
         //Calculate envelope
         if(noteOn==true) //pressed note on the keyboard
         {
-            if (envCount < attackSamples)
+            if (envCount[channel] < attackSamples)
             {
-                carrAmp+=(0.125/attackSamples); //the amplitude raises until max amplitude is reached
+                carrAmp[channel]+=(0.125f/attackSamples); //the amplitude raises until max amplitude is reached
             }
-            else if (envCount < daSamples)
+            else if (envCount[channel] < daSamples)
             {
-                carrAmp-=((0.125-sustainLevel)/decaySamples); //the amplitude decreases until sustain level is reached
+                carrAmp[channel]-=((0.125f-sustainLevel)/decaySamples); //the amplitude decreases until sustain level is reached
             }
-            releaseLevel = carrAmp; // saves the amplitude state
+            releaseLevel[channel] = carrAmp[channel]; // saves the amplitude state
         }
         else //released note on the keyboard
         {
-            if(carrAmp>0.0000001)
-                carrAmp-=(releaseLevel/releaseSamples); //amplitude decreases until silence
+            if(carrAmp[channel]>0.0000001f)
+                carrAmp[channel]-=(releaseLevel[channel]/releaseSamples); //amplitude decreases until silence
         }
-        envCount++;
-        return carrAmp;
+        envCount[channel]++;
+        return carrAmp[channel];
     };
     
     void setAttack(float a)
     {
         attackTime = a;
         attackSamples = currentSampleRate * attackTime;
-        //printf("Attack time: %f\n", attackTime);
-        //printf("Attack samples: %d\n", attackSamples);
     };
     void setDecay(float d)
     {
         decayTime = d;
         decaySamples = currentSampleRate * decayTime;
-        //printf("decay time %f\n", decayTime);
         daSamples = decaySamples + attackSamples;
-        //printf("decay Samples %d\n", decaySamples);
-        //printf("da Samples %d\n", daSamples);
     };
     void setSustain(float s)
     {
@@ -65,34 +61,38 @@ public:
     {
         releaseTime = r;
         releaseSamples = currentSampleRate * releaseTime;
-        //printf("release level %f\n", releaseLevel);
-        //printf("release time %f\n", releaseTime);
-        //printf("release samples %d\n", releaseSamples);
     };
-    float getCarrAmp(){
-        return carrAmp;
+    float getCarrAmp(int channel){
+        return carrAmp[channel];
     };
-    void setCarrAmp(float a){
-        carrAmp=a;
+    void setCarrAmp(float a, int channel){
+        carrAmp[channel]=a;
     };
     void setNoteOn(bool n){
         noteOn = n;
     };
     void resetEnvCount(){
-        envCount = 0;
+        envCount[0] = 0;
+        envCount[1] = 0;
     };
     void setSampleRate(float sr){
         currentSampleRate = sr;
     };
+    bool isActive(){
+        if (carrAmp[0]<0.0000001)
+            return false;
+        else
+            return true;
+    };
     
 private:
     float currentSampleRate;
-    float carrAmp;
+    float carrAmp[2];
     float attackTime, decayTime, sustainLevel, releaseTime;
     int attackSamples, decaySamples, releaseSamples, daSamples;
-    int envCount;
+    int envCount[2];
     bool noteOn;
-    float releaseLevel;
+    float releaseLevel[2];
 };
 
 

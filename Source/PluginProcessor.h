@@ -73,8 +73,12 @@ public:
         voice->setNoteOn(true);
         voice->setSampleRate(currentSampleRate);
         //voice->setOctave(octave);
-        voice->setWaveform(waveform);
-        voice->setFrequency(frequency);
+        voice->setWaveform1(waveform1);
+        voice->setWaveform2(waveform2);
+        float freq2a = frequency * pow(2,octave[0] + semitone[0]/12.f + fine[0]/1200.f);
+        float freq2b = frequency * pow(2,octave[1] + semitone[1]/12.f  + fine[1]/1200.f);
+        voice->setFrequency(freq2a, freq2b);
+        //voice->setFrequency(frequency * pow(2,octave[0] + 1.f/fine[0]), frequency * pow(2,octave[1]) + 1.f/fine[1]);
         /*voice->setModFreq(modFreq);
         voice->setModAmp(modAmp);
         voice->setFrequencyFM(modFreq);*/
@@ -91,13 +95,21 @@ public:
         voice->setFilterRelease(releaseF);
         voice->initFilterEnv(cut, envAmount);
         
+        //Mix
+        voice->setMix(mix);
+        
+        //LFO
+        voice->setFrequencyLFO(lfoFreq);
+        voice->setLfoAmp(lfoAmp);
+        
         voices.add(voice);
     };
     void deactivateVoice(float freq)
     {
         for (auto voiceIndex = 0; voiceIndex < voices.size(); ++voiceIndex)
         {
-            if (voices[voiceIndex]->getFrequency() == freq)
+            float freq2 = freq * pow(2,octave[0] + semitone[0]/12.f + fine[0]/1200.f);
+            if (voices[voiceIndex]->getFrequency() == freq2)
             {
                 voices[voiceIndex]->setNoteOn(false);
                 voices[voiceIndex]->resetEnvCount();
@@ -195,14 +207,23 @@ public:
     };
     
     // waveforms
-    void setWaveform(int x)
+    void setWaveform1(int x)
     {
-        waveform = x;
+        waveform1 = x;
         resetVoices();
     };
-    int getWaveform()
+    void setWaveform2(int x)
     {
-        return waveform;
+        waveform2 = x;
+        resetVoices();
+    };
+    int getWaveform1()
+    {
+        return waveform1;
+    };
+    int getWaveform2()
+    {
+        return waveform2;
     };
     
     // Filter envelope
@@ -250,6 +271,65 @@ public:
     {
         return envAmount;
     };
+    void setMix(float m)
+    {
+        mix = m;
+        for (auto voiceIndex = 0; voiceIndex < voices.size(); ++voiceIndex)
+        {
+            voices[voiceIndex]->setMix(m);
+        }
+    };
+    float getMix()
+    {
+        return mix;
+    };
+    void setOct(float o, int osc)
+    {
+        octave[osc] = o;
+    };
+    float getOct(int osc)
+    {
+        return octave[osc];
+    };
+    void setSemi(float s, int osc)
+    {
+        semitone[osc] = s;
+    };
+    float getSemi(int osc)
+    {
+        return semitone[osc];
+    };
+    void setFine(float f, int osc)
+    {
+        fine[osc] = f;
+    };
+    float getFine(int osc)
+    {
+        return fine[osc];
+    };
+    
+    //LFO
+    void setLfoFreq(float f)
+    {
+        lfoFreq = f;
+    };
+    float getLfoFreq()
+    {
+        return lfoFreq;
+    };
+    void setLfoAmp(float a)
+    {
+        lfoAmp = a;
+        for (auto voiceIndex = 0; voiceIndex < voices.size(); ++voiceIndex)
+        {
+            voices[voiceIndex]->setLfoAmp(a);
+        }
+    };
+    float getLfoAmp()
+    {
+        return lfoAmp;
+    };
+
         
 private:
     float currentSampleRate = 0.0;
@@ -259,10 +339,13 @@ private:
     float attack, decay, sustain, release; //amp adsr
     float modFreq, modAmp;
     float cut, res;
-    int waveform;
+    int waveform1;
+    int waveform2;
     float envAmount;
     float attackF, decayF, sustainF, releaseF; //filter adsr
-    
+    float mix;
+    float octave[2], semitone[2], fine[2];
+    float lfoFreq, lfoAmp;
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (SubstractiveSynthAudioProcessor)
 };
