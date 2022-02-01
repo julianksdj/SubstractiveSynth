@@ -14,7 +14,6 @@
 #include "SawOscillator.h"
 #include "Filter.h"
 #include "FilterEnvelope.h"
-#include "LFO.h"
 
 class Voice
 {
