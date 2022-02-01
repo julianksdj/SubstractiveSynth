@@ -1,19 +1,18 @@
 # SubstractiveSynth
 
-![image](https://user-images.githubusercontent.com/66480309/148684590-d927e731-9bfb-4932-aa39-d604af2b40ef.png)
- 
+![image](https://user-images.githubusercontent.com/66480309/152038819-fb2ad7d4-4bfa-4510-80a3-53944122fb51.png)
+
 ## Features:
  - Polyphony
- - 1 Oscillator
+ - 2 Oscillators
  - Waveforms: Square, Sawtooth, Sine
  - 2-pole Low pass filter
  - Amplitude envelope controls: Attack, Decay, Sustain, Release
  - Filter envelope controls
+ - LFO control
  
  ## Future features:
- - Add second and third oscillator
  - High-pass filter
- - LFO control for envelopes
  - Velocity
  - Routing options
 
