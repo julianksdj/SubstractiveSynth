@@ -56,7 +56,7 @@ SubstractiveSynthAudioProcessorEditor::SubstractiveSynthAudioProcessorEditor (Su
     carrierSSlider.setSliderStyle(juce::Slider::SliderStyle::LinearVertical);
     addAndMakeVisible (carrierSSlider);
     carrierSSlider.setLookAndFeel(&customLook);
-    carrierSSlider.setNormalisableRange(juce::NormalisableRange<double>(0.f, 0.125f, 0.0001f, 1.f));
+    carrierSSlider.setNormalisableRange(juce::NormalisableRange<double>(0.f, 1.f, 0.0001f, 1.f));
     carrierSSlider.addListener (this);
     carrierSSlider.setValue(audioProcessor.getSustain());
     addAndMakeVisible (carrierSLabel);
@@ -114,7 +114,7 @@ SubstractiveSynthAudioProcessorEditor::SubstractiveSynthAudioProcessorEditor (Su
 
     //waveform buttons
     waveLed1 = 1;
-    waveLed2 = 3;
+    waveLed2 = 1;
     addAndMakeVisible (pulseButton1);
     pulseButton1.setLookAndFeel(&customLook);
     pulseButton1.onClick = [this] { updateToggleState (&pulseButton1, "Pulse1"); };

@@ -16,6 +16,9 @@ public:
     {
         envCount[0] = 0;
         envCount[1] = 0;
+        envelope[0] = 0.0000002f;
+        envelope[1] = 0.0000002f;
+        fin = false;
     };
 
     float getEnvelope(int channel)
@@ -25,21 +28,23 @@ public:
         {
             if (envCount[channel] < attackSamples)
             {
-                carrAmp[channel]+=(0.125f/attackSamples); //the amplitude raises until max amplitude is reached
+                envelope[channel]+=(1.f/attackSamples); //the amplitude raises until max amplitude is reached
             }
             else if (envCount[channel] < daSamples)
             {
-                carrAmp[channel]-=((0.125f-sustainLevel)/decaySamples); //the amplitude decreases until sustain level is reached
+                envelope[channel]-=((1.f-sustainLevel)/decaySamples); //the amplitude decreases until sustain level is reached
             }
-            releaseLevel[channel] = carrAmp[channel]; // saves the amplitude state
+            releaseLevel[channel] = envelope[channel]; // saves the amplitude state
         }
         else //released note on the keyboard
         {
-            if(carrAmp[channel]>0.0000001f)
-                carrAmp[channel]-=(releaseLevel[channel]/releaseSamples); //amplitude decreases until silence
+            if(envelope[channel]>releaseLevel[channel]/releaseSamples)
+                envelope[channel]-=(releaseLevel[channel]/releaseSamples); //amplitude decreases until silence
+            else
+                fin = true;
         }
         envCount[channel]++;
-        return carrAmp[channel];
+        return envelope[channel];
     };
     
     void setAttack(float a)
@@ -62,12 +67,7 @@ public:
         releaseTime = r;
         releaseSamples = currentSampleRate * releaseTime;
     };
-    float getCarrAmp(int channel){
-        return carrAmp[channel];
-    };
-    void setCarrAmp(float a, int channel){
-        carrAmp[channel]=a;
-    };
+
     void setNoteOn(bool n){
         noteOn = n;
     };
@@ -78,21 +78,19 @@ public:
     void setSampleRate(float sr){
         currentSampleRate = sr;
     };
-    bool isActive(){
-        if (carrAmp[0]<0.0000001)
-            return false;
-        else
-            return true;
+    bool getFin(){
+        return fin;
     };
     
 private:
     float currentSampleRate;
-    float carrAmp[2];
+    float envelope[2];
     float attackTime, decayTime, sustainLevel, releaseTime;
     int attackSamples, decaySamples, releaseSamples, daSamples;
     int envCount[2];
     bool noteOn;
     float releaseLevel[2];
+    bool fin;
 };
 
 

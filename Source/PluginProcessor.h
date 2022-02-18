@@ -70,6 +70,7 @@ public:
             }
         }
         Voice *voice = new Voice();
+        
         voice->setNoteOn(true);
         voice->setSampleRate(currentSampleRate);
         //voice->setOctave(octave);
@@ -78,10 +79,8 @@ public:
         float freq2a = frequency * pow(2,octave[0] + semitone[0]/12.f + fine[0]/1200.f);
         float freq2b = frequency * pow(2,octave[1] + semitone[1]/12.f  + fine[1]/1200.f);
         voice->setFrequency(freq2a, freq2b);
-        //voice->setFrequency(frequency * pow(2,octave[0] + 1.f/fine[0]), frequency * pow(2,octave[1]) + 1.f/fine[1]);
-        /*voice->setModFreq(modFreq);
-        voice->setModAmp(modAmp);
-        voice->setFrequencyFM(modFreq);*/
+        
+        // Amp Envelope
         voice->setAttack(attack);
         voice->setDecay(decay);
         voice->setSustain(sustain);
@@ -101,6 +100,9 @@ public:
         //LFO
         voice->setFrequencyLFO(lfoFreq);
         voice->setLfoAmp(lfoAmp);
+        
+        //velocity
+        voice->setVelocity(velocity);
         
         voices.add(voice);
     };
@@ -165,22 +167,6 @@ public:
     {
         return release;
     };
-    /*void setModFreq(float mod)
-    {
-        modFreq = mod;
-    };
-    void setModAmp(float mod)
-    {
-        modAmp = mod;
-    };
-    float getModFreq()
-    {
-        return modFreq;
-    };
-    float getModAmp()
-    {
-        return modAmp;
-    };*/
     void setCut(float x)
     {
         cut = x;
@@ -286,6 +272,7 @@ public:
     void setOct(float o, int osc)
     {
         octave[osc] = o;
+        resetVoices();
     };
     float getOct(int osc)
     {
@@ -294,6 +281,7 @@ public:
     void setSemi(float s, int osc)
     {
         semitone[osc] = s;
+        resetVoices();
     };
     float getSemi(int osc)
     {
@@ -302,6 +290,7 @@ public:
     void setFine(float f, int osc)
     {
         fine[osc] = f;
+        resetVoices();
     };
     float getFine(int osc)
     {
@@ -346,6 +335,7 @@ private:
     float mix;
     float octave[2], semitone[2], fine[2];
     float lfoFreq, lfoAmp;
+    float velocity;
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (SubstractiveSynthAudioProcessor)
 };

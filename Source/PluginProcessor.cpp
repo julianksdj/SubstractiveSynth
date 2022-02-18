@@ -93,13 +93,13 @@ void SubstractiveSynthAudioProcessor::changeProgramName (int index, const juce::
 //==============================================================================
 void SubstractiveSynthAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBlock)
 {
-    // Use this method as the place to do any pre-playback
-    // initialisation that you need..
+    // Initializations
+    
     currentSampleRate = sampleRate;
     
     attack = 0.0001f;
     decay = 0.0001f;
-    sustain = 0.125f;
+    sustain = 1.f;
     release = 0.0001f;
     
     setCut(20000.f);
@@ -112,7 +112,7 @@ void SubstractiveSynthAudioProcessor::prepareToPlay (double sampleRate, int samp
     envAmount = 0.f;
     
     waveform1 = 1;
-    waveform2 = 3;
+    waveform2 = 1;
     
     mix = 0.5f;
     
@@ -180,6 +180,7 @@ void SubstractiveSynthAudioProcessor::processBlock (juce::AudioBuffer<float>& bu
         {
             //printf("\nNOTE PRESSED\n");
             //printf("Received note %d\n",currentMessage.getNoteNumber());
+            velocity = currentMessage.getVelocity() / 127.f;
             addVoice(juce::MidiMessage::getMidiNoteInHertz(currentMessage.getNoteNumber()));
         }
         else if (currentMessage.isNoteOff())
@@ -204,8 +205,8 @@ void SubstractiveSynthAudioProcessor::processBlock (juce::AudioBuffer<float>& bu
                 auto filtEnv = voice->getFilterEnvelope(channel);
                 if(voice->isActive())
                 {
-                    auto currentSample = voice->getNextSample(channel)*ampEnv;
-                    float filteredSample = voice->processSample(currentSample, channel, filtEnv);// filter
+                    auto currentSample = voice->getNextSample(channel)*ampEnv*0.0125f;
+                    auto filteredSample = voice->processSample(currentSample, channel, filtEnv);// filter
                     sumOsc += filteredSample;
                 }
                 else

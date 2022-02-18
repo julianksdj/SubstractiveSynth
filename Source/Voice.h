@@ -23,10 +23,10 @@ public:
     // voice features functions
     bool isActive ()
     {
-        if (!env.isActive())
-            return false;
-        else
+        if (!env.getFin())
             return true;
+        else
+            return false;
     };
     
     // Oscillator functions
@@ -39,10 +39,7 @@ public:
         oscSine2.setFrequency(f2);
         oscSaw2.setFrequency(f2);
     };
-    /*void setFrequencyFM (float f)
-    {
-        osc.setFrequencyFM(f);
-    };*/
+
     float getNextSample(int channel) //noexcept
     {
         float sample1 = 0.f;
@@ -66,7 +63,7 @@ public:
         //float lfoMix = mixx * lfo.getNextSample(channel);
         float lfoMix = mixx * (1 - lfo.getNextSample(channel)*lfoAmp);
         
-        return lfoMix;
+        return lfoMix * velocity;
     };
     float getFrequency()
     {
@@ -95,14 +92,6 @@ public:
         oscSaw2.setCarrFreq(m);
             
     };
-    /*void setModFreq(float m)
-    {
-        osc.setModFreq(m);
-    };
-    void setModAmp(float m)
-    {
-        osc.setModAmp(m);
-    };*/
 
     // Envelope functions
     float getEnvelope(int channel)
@@ -125,14 +114,11 @@ public:
     {
         env.setRelease(r);
     };
-//    void setSampleRate(int sr)
+    
+//    void setCarrAmp(float a, int channel)
 //    {
-//        env.setSampleRate(sr);
+//        env.setCarrAmp(a, channel);
 //    };
-    void setCarrAmp(float a, int channel)
-    {
-        env.setCarrAmp(a, channel);
-    };
     void setNoteOn(bool n)
     {
         env.setNoteOn(n);
@@ -232,6 +218,10 @@ public:
         lfoAmp = a;
     };
     
+    void setVelocity(float vel)
+    {
+        velocity = vel;
+    }
     
 private:
     SineOscillator oscSine1;
@@ -247,6 +237,7 @@ private:
     float mix;
     SineOscillator lfo;
     float lfoAmp;
+    float velocity;
 };
 
 #endif /* Voice_h */

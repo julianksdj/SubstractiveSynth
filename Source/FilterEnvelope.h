@@ -34,9 +34,9 @@ public:
         }
         else //released note on the keyboard
         {
-            if(currentFreq[channel]> (20.0+(releaseFreq[channel]-20.0)/releaseSamples))
+            if(currentFreq[channel]> (20.f+(releaseFreq[channel]-20.f)/releaseSamples))
             {
-                currentFreq[channel] = currentFreq[channel] - envAmount*(releaseFreq[channel] - 20.0)/releaseSamples;
+                currentFreq[channel] = currentFreq[channel] - envAmount*(releaseFreq[channel] - 20.f)/releaseSamples;
             }
         }
         envCount[channel]++;
