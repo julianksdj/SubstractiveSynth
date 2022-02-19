@@ -314,9 +314,17 @@ public:
             voices[voiceIndex]->setLfoAmp(a);
         }
     };
+    void setLfoFilt(float f)
+    {
+        lfoFilt = f;
+    };
     float getLfoAmp()
     {
         return lfoAmp;
+    };
+    void setVelocity(float vel)
+    {
+        velocity = vel;
     };
 
         
@@ -334,7 +342,7 @@ private:
     float attackF, decayF, sustainF, releaseF; //filter adsr
     float mix;
     float octave[2], semitone[2], fine[2];
-    float lfoFreq, lfoAmp;
+    float lfoFreq, lfoAmp, lfoFilt;
     float velocity;
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (SubstractiveSynthAudioProcessor)

@@ -47,9 +47,9 @@ public:
         return cut;
     };
     
-    float processSample(float xn, int channel, float env){
+    float processSample(float xn, int channel, float env, float lfoAmount){
         //cut = env;
-        cut = env;
+        cut = env * lfoAmount;
         updateFilter();
         if (channel == 0)
         {
@@ -79,10 +79,6 @@ public:
     void initFilter(float c, float r){
         setCut(c);
         setRes(r);
-        //z1L = 0.0;
-        //z2L = 0.0;
-        //z1R = 0.0;
-        //z1L = 0.0;
     };
     
     void setSampleRate(float sr)

@@ -147,8 +147,11 @@ public:
     float getCut(){
         return filter.getCut();
     };
-    float processSample(float xn, int channel, float env){
-        return filter.processSample(xn, channel, env);
+    float processSample(float xn, int channel, float env, float lfo){
+        
+        float lfoAmount = (1 - lfoF.getNextSample(channel)*lfo);
+        float y = filter.processSample(xn, channel, env, lfoAmount);
+        return y;
     };
     void initFilter(float cut, float res){
         filter.initFilter(cut, res);
@@ -166,6 +169,7 @@ public:
         filter.setSampleRate(sr);
         filterEnv.setSampleRate(sr);
         lfo.setSampleRate(sr);
+        lfoF.setSampleRate(sr);
     };
     void setWaveform1(int w)
     {
@@ -212,6 +216,8 @@ public:
     void setFrequencyLFO(float f)
     {
         lfo.setFrequency(f);
+        lfoF.setFrequency(f);
+        
     };
     void setLfoAmp(float a)
     {
@@ -238,6 +244,7 @@ private:
     SineOscillator lfo;
     float lfoAmp;
     float velocity;
+    SineOscillator lfoF;
 };
 
 #endif /* Voice_h */

@@ -516,6 +516,7 @@ void SubstractiveSynthAudioProcessorEditor::sliderValueChanged(juce::Slider *sli
     }
     else if(slider == &lfoFilterSlider)
     {
+        audioProcessor.setLfoFilt(lfoFilterSlider.getValue());
     }
     
 }
@@ -528,6 +529,7 @@ void SubstractiveSynthAudioProcessorEditor::handleNoteOn (juce::MidiKeyboardStat
     double nota = 0.0;
     nota = juce::MidiMessage::getMidiNoteInHertz (midiNoteNumber);
     //printf("Calculated frequency %f\n",nota);
+    audioProcessor.setVelocity(1.f);
     audioProcessor.addVoice(nota);
 }
 void SubstractiveSynthAudioProcessorEditor::handleNoteOff (juce::MidiKeyboardState* source, int midiChannel, int midiNoteNumber, float velocity)
