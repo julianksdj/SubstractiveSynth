@@ -5,6 +5,7 @@
               jucerFormatVersion="1" pluginCharacteristicsValue="pluginIsSynth,pluginWantsMidiIn">
   <MAINGROUP id="motx19" name="substractiveSynth">
     <GROUP id="{6A13FB4A-C32E-0FB5-6199-0D5DCD03241B}" name="Source">
+      <FILE id="xOzLxB" name="Delay.h" compile="0" resource="0" file="Source/Delay.h"/>
       <FILE id="wy1rw5" name="PluginProcessor.cpp" compile="1" resource="0"
             file="Source/PluginProcessor.cpp"/>
       <FILE id="DRYLYr" name="Envelope.h" compile="0" resource="0" file="Source/Envelope.h"/>
@@ -26,6 +27,7 @@
             file="Source/CustomLookAndFeel.h"/>
     </GROUP>
     <GROUP id="{A96DFDFC-4AFF-090A-090C-6EC2D657558D}" name="Resources">
+      <FILE id="IUviwp" name="logo.png" compile="0" resource="1" file="gui_design/logo.png"/>
       <FILE id="vhxrC5" name="led_off.png" compile="0" resource="1" file="gui_design/led_off.png"/>
       <FILE id="IXZ8Gn" name="led_on.png" compile="0" resource="1" file="gui_design/led_on.png"/>
       <FILE id="IGyf8e" name="button_juno_off.png" compile="0" resource="1"

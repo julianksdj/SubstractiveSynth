@@ -126,7 +126,9 @@ void SubstractiveSynthAudioProcessor::prepareToPlay (double sampleRate, int samp
     lfoFreq = 1.f;
     lfoAmp = 0.f;
     lfoFilt = 0.f;
-
+    
+    //delay
+    delay.initDelay(currentSampleRate, 300.f, 20.f, 0.f);
 }
 
 void SubstractiveSynthAudioProcessor::releaseResources()
@@ -214,6 +216,9 @@ void SubstractiveSynthAudioProcessor::processBlock (juce::AudioBuffer<float>& bu
                     voices.remove(voiceIndex);
             }
             channelData[sample] += sumOsc;
+            
+            //delay
+            delay.processDelay(channelData, channel, sample);
         }
     }
 }

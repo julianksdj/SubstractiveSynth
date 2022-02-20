@@ -17,8 +17,8 @@ public:
     };
     void setFrequency (float frequency)
     {
-        originalFreq = frequency;
         carrFreq = frequency;
+        carrFreq0 = frequency;
         auto cyclesPerSample = carrFreq / currentSampleRate;
         angleDelta = cyclesPerSample * juce::MathConstants<double>::twoPi;
     };
@@ -47,13 +47,12 @@ public:
     };
     float getFrequency()
     {
-        //return carrFreq;
-        return originalFreq;
+        return carrFreq0;
     };
-    void setCarrFreq(float m)
-    {
-        carrFreq = m;
-    };
+//    void setCarrFreq(float m)
+//    {
+//        carrFreq = m;
+//    };
     void setSampleRate(float sr)
     {
         currentSampleRate = sr;
@@ -65,7 +64,7 @@ private:
     float carrFreq;
     float modAmp;
     float modAmpSmoothed;
-    float originalFreq; //this variable stores the frequency of the note played without detune
+    float carrFreq0; //this variable stores the frequency of the note played without detune
 };
 
 #endif /* SquareOscillator_h */

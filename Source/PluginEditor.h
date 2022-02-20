@@ -109,6 +109,21 @@ private:
     juce::Label lfoAmpLabel;
     juce::Label lfoFilterLabel;
     
+    //delay
+    juce::Slider delayTimeSlider;
+    juce::Slider delayFeedSlider;
+    juce::Slider delayDrySlider;
+    juce::ToggleButton delaySyncButton;
+    bool delaySyncLed;
+    juce::Label delayTimeLabel;
+    juce::Label delayFeedLabel;
+    juce::Label delayDryLabel;
+    juce::Label delaySyncLabel;
+    
+    //logo
+    juce::Image logo = juce::ImageCache::getFromMemory (BinaryData::logo_png, BinaryData::logo_pngSize);
+    
+    
     juce::AudioDeviceManager deviceManager;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (SubstractiveSynthAudioProcessorEditor)

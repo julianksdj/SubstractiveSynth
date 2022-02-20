@@ -10,6 +10,7 @@
 
 #include <JuceHeader.h>
 #include "Voice.h"
+#include "Delay.h"
 
 //==============================================================================
 /**
@@ -73,12 +74,12 @@ public:
         
         voice->setNoteOn(true);
         voice->setSampleRate(currentSampleRate);
-        //voice->setOctave(octave);
         voice->setWaveform1(waveform1);
         voice->setWaveform2(waveform2);
-        float freq2a = frequency * pow(2,octave[0] + semitone[0]/12.f + fine[0]/1200.f);
-        float freq2b = frequency * pow(2,octave[1] + semitone[1]/12.f  + fine[1]/1200.f);
-        voice->setFrequency(freq2a, freq2b);
+//        float freq2a = frequency * pow(2,octave[0] + semitone[0]/12.f + fine[0]/1200.f);
+//        float freq2b = frequency * pow(2,octave[1] + semitone[1]/12.f  + fine[1]/1200.f);
+        //voice->setFrequency(freq2a, freq2b
+        voice->setFrequency(frequency, octave, semitone, fine);
         
         // Amp Envelope
         voice->setAttack(attack);
@@ -110,8 +111,8 @@ public:
     {
         for (auto voiceIndex = 0; voiceIndex < voices.size(); ++voiceIndex)
         {
-            float freq2 = freq * pow(2,octave[0] + semitone[0]/12.f + fine[0]/1200.f);
-            if (voices[voiceIndex]->getFrequency() == freq2)
+            //float freq2 = freq * pow(2,octave[0] + semitone[0]/12.f + fine[0]/1200.f);
+            if (voices[voiceIndex]->getFrequency() == freq)
             {
                 voices[voiceIndex]->setNoteOn(false);
                 voices[voiceIndex]->resetEnvCount();
@@ -272,7 +273,7 @@ public:
     void setOct(float o, int osc)
     {
         octave[osc] = o;
-        resetVoices();
+        //resetVoices();
     };
     float getOct(int osc)
     {
@@ -281,7 +282,7 @@ public:
     void setSemi(float s, int osc)
     {
         semitone[osc] = s;
-        resetVoices();
+        //resetVoices();
     };
     float getSemi(int osc)
     {
@@ -290,7 +291,7 @@ public:
     void setFine(float f, int osc)
     {
         fine[osc] = f;
-        resetVoices();
+        //resetVoices();
     };
     float getFine(int osc)
     {
@@ -326,7 +327,26 @@ public:
     {
         velocity = vel;
     };
-
+    
+    //Delay
+    float getDelayTime(){
+        return delay.getDelayTime();
+    };
+    float getDelayFeed(){
+        return delay.getDelayFeed();
+    };
+    float getDelayDry(){
+        return delay.getDelayDry();
+    };
+    void setDelayTime(float dt){
+        delay.setDelayTime(dt);
+    };
+    void setDelayFeed(float fb){
+        delay.setDelayFeed(fb);
+    };
+    void setDelayDry(float dw){
+        delay.setDelayDry(dw);
+    };
         
 private:
     float currentSampleRate = 0.0;
@@ -344,6 +364,8 @@ private:
     float octave[2], semitone[2], fine[2];
     float lfoFreq, lfoAmp, lfoFilt;
     float velocity;
+    Delay delay;
+    
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (SubstractiveSynthAudioProcessor)
 };

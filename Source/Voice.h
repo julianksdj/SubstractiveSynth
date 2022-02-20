@@ -30,8 +30,14 @@ public:
     };
     
     // Oscillator functions
-    void setFrequency (float f1, float f2)
+    //void setFrequency (float f1, float f2)
+    void setFrequency (float frequency, float * octave, float * semitone, float * fine)
     {
+        
+        float f1 = frequency * pow(2,octave[0] + semitone[0]/12.f + fine[0]/1200.f);
+        float f2 = frequency * pow(2,octave[1] + semitone[1]/12.f  + fine[1]/1200.f);
+        
+        frequency0 = frequency;
         oscSquare1.setFrequency(f1);
         oscSine1.setFrequency(f1);
         oscSaw1.setFrequency(f1);
@@ -67,29 +73,14 @@ public:
     };
     float getFrequency()
     {
-        if (waveform1 == 1)
-            return oscSquare1.getFrequency();
-        else if (waveform1 == 2)
-            return oscSaw1.getFrequency();
-        else if (waveform1 == 3)
-            return oscSine1.getFrequency();
-        /*else if (waveform2 == 1)
-            return oscSquare2.getFrequency();
-        else if (waveform2 == 2)
-            return oscSaw2.getFrequency();
-        else if (waveform2 == 3)
-            return oscSine2.getFrequency();*/
-        return 0.0;
-            
-    };
-    void setCarrFreq(float m)
-    {
-        oscSquare1.setCarrFreq(m);
-        oscSine1.setCarrFreq(m);
-        oscSaw1.setCarrFreq(m);
-        oscSquare2.setCarrFreq(m);
-        oscSine2.setCarrFreq(m);
-        oscSaw2.setCarrFreq(m);
+//        if (waveform1 == 1)
+//            return oscSquare1.getFrequency();
+//        else if (waveform1 == 2)
+//            return oscSaw1.getFrequency();
+//        else if (waveform1 == 3)
+//            return oscSine1.getFrequency();
+//        return 0.0;
+        return frequency0;
             
     };
 
@@ -245,6 +236,7 @@ private:
     float lfoAmp;
     float velocity;
     SineOscillator lfoF;
+    float frequency0;
 };
 
 #endif /* Voice_h */

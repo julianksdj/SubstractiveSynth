@@ -297,7 +297,47 @@ SubstractiveSynthAudioProcessorEditor::SubstractiveSynthAudioProcessorEditor (Su
     addAndMakeVisible (lfoFilterLabel);
     lfoFilterLabel.setText ("LFf", juce::dontSendNotification);
     lfoFilterLabel.setJustificationType(juce::Justification::centred);
-
+    
+    //delayTime
+    delayTimeSlider.setSliderStyle(juce::Slider::SliderStyle::LinearVertical);
+    addAndMakeVisible (delayTimeSlider);
+    delayTimeSlider.setLookAndFeel(&customLook);
+    delayTimeSlider.setNormalisableRange(juce::NormalisableRange<double>(0.f, 2000.f, 1.f, 1.f));
+    delayTimeSlider.addListener (this);
+    delayTimeSlider.setValue(audioProcessor.getDelayTime());
+    addAndMakeVisible (delayTimeLabel);
+    delayTimeLabel.setText ("DT", juce::dontSendNotification);
+    delayTimeLabel.setJustificationType(juce::Justification::centred);
+    
+    //delayFeedback
+    delayFeedSlider.setSliderStyle(juce::Slider::SliderStyle::LinearVertical);
+    addAndMakeVisible (delayFeedSlider);
+    delayFeedSlider.setLookAndFeel(&customLook);
+    delayFeedSlider.setNormalisableRange(juce::NormalisableRange<double>(0.f, 100.f, 1.f,  1.f));
+    delayFeedSlider.addListener (this);
+    delayFeedSlider.setValue(audioProcessor.getDelayFeed());
+    addAndMakeVisible (delayFeedLabel);
+    delayFeedLabel.setText ("FB", juce::dontSendNotification);
+    delayFeedLabel.setJustificationType(juce::Justification::centred);
+    
+    //delayDryWet
+    delayDrySlider.setSliderStyle(juce::Slider::SliderStyle::LinearVertical);
+    addAndMakeVisible (delayDrySlider);
+    delayDrySlider.setLookAndFeel(&customLook);
+    delayDrySlider.setNormalisableRange(juce::NormalisableRange<double>(0.f, 100.f, 1.f,  1.f));
+    delayDrySlider.addListener (this);
+    delayDrySlider.setValue(audioProcessor.getDelayDry());
+    addAndMakeVisible (delayDryLabel);
+    delayDryLabel.setText ("DW", juce::dontSendNotification);
+    delayDryLabel.setJustificationType(juce::Justification::centred);
+    /* //delay BPM sync, future feature
+    addAndMakeVisible (delaySyncButton);
+    delaySyncButton.setLookAndFeel(&customLook);
+    delaySyncButton.onClick = [this] { updateToggleState (&delaySyncButton, "Sync"); };
+    addAndMakeVisible(delaySyncLabel);
+    delaySyncLabel.setText("Sy", juce::dontSendNotification);
+    delaySyncLabel.setJustificationType(juce::Justification::centred);
+     */
 }
 
 SubstractiveSynthAudioProcessorEditor::~SubstractiveSynthAudioProcessorEditor()
@@ -312,8 +352,9 @@ void SubstractiveSynthAudioProcessorEditor::paint (juce::Graphics& g)
     g.setColour(juce::Colours::white);
     g.setFont (15.0f);
     g.drawImageAt (background, 0, 0);
-    
+    g.drawImage(logo, 20, 345, 120, 27, 0, 0, 600, 135);
     int ledWidth = 18;
+    int ledSWidth = 14;
 
     if (waveLed1 == 1)
     {
@@ -352,6 +393,16 @@ void SubstractiveSynthAudioProcessorEditor::paint (juce::Graphics& g)
         g.drawImage(ledOff, 71, 136, ledWidth, ledWidth, 0, 0, 80, 80);
         g.drawImage(ledOn, 111, 136, ledWidth, ledWidth, 0, 0, 80, 80);
     }
+    /* //delay BPM sync, future feature
+    if (delaySyncLed)
+    {
+        g.drawImage(ledOn, 33, 280, ledSWidth, ledSWidth, 0, 0, 80, 80);
+    }
+    else
+    {
+        g.drawImage(ledOff, 33, 280, ledSWidth, ledSWidth, 0, 0, 80, 80);
+    }
+     */
 }
 
 void SubstractiveSynthAudioProcessorEditor::resized()
@@ -366,6 +417,12 @@ void SubstractiveSynthAudioProcessorEditor::resized()
     
     int buttonWidth = 40;
     int buttonHeight = 44;
+    
+    int sliderSWidth = 23;
+    int sliderSHeight = 91;
+    
+    int buttonSWidth = 30;
+    int buttonSHeight = 34;
     
     //Keyboard
     keyboardComponent.setBounds(0, getHeight()-keyboardHeight, keyboardWidth, keyboardHeight);
@@ -430,6 +487,18 @@ void SubstractiveSynthAudioProcessorEditor::resized()
     lfoFreqLabel.setBounds(420, 220, sliderWidth, 20);
     lfoFilterSlider.setBounds(420+sliderWidth, 240, sliderWidth, sliderHeight);
     lfoFilterLabel.setBounds(420+sliderWidth, 220, sliderWidth, 20);
+    
+    //delay sliders, (button and led)
+    delayTimeSlider.setBounds(45, 244, sliderSWidth, sliderSHeight);
+    delayFeedSlider.setBounds(68, 244, sliderSWidth, sliderSHeight);
+    delayDrySlider.setBounds(91, 244, sliderSWidth, sliderSHeight);
+    delayTimeLabel.setBounds(45, 224, sliderSWidth, 20);
+    delayFeedLabel.setBounds(68, 224, sliderSWidth, 20);
+    delayDryLabel.setBounds(91, 224, sliderSWidth+2, 20);
+    /* //delay BPM sync, future feature
+    delaySyncButton.setBounds(25, 294, buttonSWidth, buttonSHeight);
+    delaySyncLabel.setBounds(25, 264, buttonSWidth, 20);
+     */
 }
 
 void SubstractiveSynthAudioProcessorEditor::sliderValueChanged(juce::Slider *slider)
@@ -518,6 +587,18 @@ void SubstractiveSynthAudioProcessorEditor::sliderValueChanged(juce::Slider *sli
     {
         audioProcessor.setLfoFilt(lfoFilterSlider.getValue());
     }
+    else if(slider == &delayTimeSlider)
+    {
+        audioProcessor.setDelayTime(delayTimeSlider.getValue());
+    }
+    else if(slider == &delayFeedSlider)
+    {
+        audioProcessor.setDelayFeed(delayFeedSlider.getValue());
+    }
+    else if(slider == &delayDrySlider)
+    {
+        audioProcessor.setDelayDry(delayDrySlider.getValue());
+    }
     
 }
 
@@ -577,4 +658,12 @@ void SubstractiveSynthAudioProcessorEditor::updateToggleState (juce::Button* but
         waveLed2 = 3;
         repaint();
     }
+    /* //delay BPM sync, future feature
+    else if (name == "Sync")
+    {
+        audioProcessor.switchSync();
+        delaySyncLed = !delaySyncLed;
+        repaint();
+    }
+     */
 }

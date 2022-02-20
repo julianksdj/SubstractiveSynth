@@ -16,6 +16,7 @@ public:
     void setFrequency (float frequency)
     {
         carrFreq = frequency;
+        carrFreq0 = frequency;
         auto cyclesPerSample = carrFreq / currentSampleRate;
         angleDelta = cyclesPerSample * juce::MathConstants<double>::twoPi;
     };
@@ -33,12 +34,12 @@ public:
     };
     float getFrequency()
     {
-        return carrFreq;
+        return carrFreq0;
     };
-    void setCarrFreq(float m)
-    {
-        carrFreq = m;
-    };
+//    void setCarrFreq(float m)
+//    {
+//        carrFreq = m;
+//    };
     void setSampleRate(float sr)
     {
         currentSampleRate = sr;
@@ -47,7 +48,7 @@ public:
 private:
     float currentAngle[2], angleDelta;
     float currentSampleRate;
-    float carrFreq;
+    float carrFreq, carrFreq0;
     float modAmp;
     float modAmpSmoothed;
     float amp;
