@@ -32,10 +32,6 @@ public:
     {
         return carrFreq0;
     };
-//    void setCarrFreq(float m)
-//    {
-//        carrFreq = m;
-//    };
     void setSampleRate(float sr)
     {
         currentSampleRate = sr;

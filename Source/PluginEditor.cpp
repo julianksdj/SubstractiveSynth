@@ -91,7 +91,7 @@ SubstractiveSynthAudioProcessorEditor::SubstractiveSynthAudioProcessorEditor (Su
     //resonance knob
     addAndMakeVisible (resKnob);
     resKnob.setLookAndFeel(&customLook);
-    resKnob.setNormalisableRange(juce::NormalisableRange<double>(0.5f, 7.f, 0.01f, 1.f));
+    resKnob.setNormalisableRange(juce::NormalisableRange<double>(0.1f, 4.f, 0.01f, 1.f));
     resKnob.addListener (this);
     resKnob.setValue(audioProcessor.getRes());
     resLabel.setText ("Res", juce::dontSendNotification);

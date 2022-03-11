@@ -24,7 +24,7 @@ public:
     float getEnvelope(int channel)
     {
         //Calculate envelope
-        if(noteOn==true) //pressed note on the keyboard
+        if(noteOn) //pressed note on the keyboard
         {
             if (envCount[channel] < attackSamples)
             {

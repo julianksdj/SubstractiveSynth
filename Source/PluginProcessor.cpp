@@ -208,7 +208,7 @@ void SubstractiveSynthAudioProcessor::processBlock (juce::AudioBuffer<float>& bu
                 auto filtEnv = voice->getFilterEnvelope(channel);
                 if(voice->isActive())
                 {
-                    auto currentSample = voice->getNextSample(channel)*ampEnv*0.0125f;
+                    auto currentSample = voice->getNextSample(channel)*ampEnv*0.125f;
                     auto filteredSample = voice->processSample(currentSample, channel, filtEnv, lfoFilt);// filter
                     sumOsc += filteredSample;
                 }

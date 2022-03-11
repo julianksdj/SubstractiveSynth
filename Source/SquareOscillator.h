@@ -12,7 +12,6 @@ class SquareOscillator {
 public:
     SquareOscillator()
     {
-        //modFreq = 500;
         modAmp = 0.0000001;
     };
     void setFrequency (float frequency)
@@ -25,7 +24,6 @@ public:
     float getNextSample(int channel)
     {
         float sample = std::sin(currentAngle[channel]);
-        //currentAngle[channel] += angleDelta;
         // 0 to pi
         if(currentAngle[channel] < juce::MathConstants<double>::pi)
         {
@@ -49,10 +47,6 @@ public:
     {
         return carrFreq0;
     };
-//    void setCarrFreq(float m)
-//    {
-//        carrFreq = m;
-//    };
     void setSampleRate(float sr)
     {
         currentSampleRate = sr;
