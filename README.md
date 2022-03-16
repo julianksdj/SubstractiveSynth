@@ -1,6 +1,6 @@
 # SubstractiveSynth
 
-![image](https://user-images.githubusercontent.com/66480309/152038819-fb2ad7d4-4bfa-4510-80a3-53944122fb51.png)
+<img width="668" alt="image" src="https://user-images.githubusercontent.com/66480309/157937749-8874087d-c76b-4b6b-85cc-a0cc6f6586be.png">
 
 ## Features:
  - Polyphony
@@ -10,6 +10,7 @@
  - Amplitude envelope controls: Attack, Decay, Sustain, Release
  - Filter envelope controls
  - LFO control
+ - Delay FX
  
  ## Future features:
  - High-pass filter
