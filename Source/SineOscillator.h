@@ -10,14 +10,10 @@
 
 class SineOscillator {
 public:
-    SineOscillator()
-    {
-    };
     void setFrequency (float frequency)
     {
-        carrFreq0 = frequency;
-        carrFreq = frequency;
-        auto cyclesPerSample = carrFreq / currentSampleRate;
+        freq = frequency;
+        auto cyclesPerSample = freq / currentSampleRate;
         angleDelta = cyclesPerSample * juce::MathConstants<double>::twoPi;
     };
     float getNextSample(int channel)
@@ -30,7 +26,7 @@ public:
     };
     float getFrequency()
     {
-        return carrFreq0;
+        return freq;
     };
     void setSampleRate(float sr)
     {
@@ -40,7 +36,7 @@ public:
 private:
     float currentAngle[2], angleDelta;
     float currentSampleRate;
-    float carrFreq, carrFreq0;
+    float freq;
 };
 
 #endif /* SineOscillator_h */

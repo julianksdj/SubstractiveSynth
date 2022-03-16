@@ -179,21 +179,18 @@ void SubstractiveSynthAudioProcessor::processBlock (juce::AudioBuffer<float>& bu
     
     while (it.getNextEvent(currentMessage, samplePos))
     {
-        if (currentMessage.isNoteOn())
+        if (currentMessage.isNoteOn()) // note pressed
         {
-            //printf("\nNOTE PRESSED\n");
-            //printf("Received note %d\n",currentMessage.getNoteNumber());
             velocity = currentMessage.getVelocity() / 127.f;
             addVoice(juce::MidiMessage::getMidiNoteInHertz(currentMessage.getNoteNumber()));
         }
-        else if (currentMessage.isNoteOff())
+        else if (currentMessage.isNoteOff()) // note released
         {
-            //printf("NOTE RELEASED\n");
             deactivateVoice(juce::MidiMessage::getMidiNoteInHertz(currentMessage.getNoteNumber()));
         }
     }
-    // -------------------------------------------------------------------------------------------------------
     
+    // AUDIO PROCESSING --------------------------------------------------------------------------------------
     for (int channel = 0; channel < totalNumOutputChannels; ++channel)
     {
         auto* channelData = buffer.getWritePointer(channel);

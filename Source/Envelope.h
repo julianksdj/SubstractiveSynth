@@ -20,7 +20,6 @@ public:
         envelope[1] = 0.0000002f;
         fin = false;
     };
-
     float getEnvelope(int channel)
     {
         //Calculate envelope
@@ -46,7 +45,6 @@ public:
         envCount[channel]++;
         return envelope[channel];
     };
-    
     void setAttack(float a)
     {
         attackTime = a;
@@ -67,7 +65,6 @@ public:
         releaseTime = r;
         releaseSamples = currentSampleRate * releaseTime;
     };
-
     void setNoteOn(bool n){
         noteOn = n;
     };
@@ -81,7 +78,6 @@ public:
     bool getFin(){
         return fin;
     };
-    
 private:
     float currentSampleRate;
     float envelope[2];

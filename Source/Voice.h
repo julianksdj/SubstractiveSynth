@@ -17,26 +17,13 @@
 
 class Voice
 {
-
 public:
     
-    // voice features functions
-    bool isActive ()
-    {
-        if (!env.getFin())
-            return true;
-        else
-            return false;
-    };
-    
     // Oscillator functions
-    //void setFrequency (float f1, float f2)
     void setFrequency (float frequency, float * octave, float * semitone, float * fine)
     {
-        
         float f1 = frequency * pow(2,octave[0] + semitone[0]/12.f + fine[0]/1200.f);
         float f2 = frequency * pow(2,octave[1] + semitone[1]/12.f  + fine[1]/1200.f);
-        
         frequency0 = frequency;
         oscSquare1.setFrequency(f1);
         oscSine1.setFrequency(f1);
@@ -45,7 +32,6 @@ public:
         oscSine2.setFrequency(f2);
         oscSaw2.setFrequency(f2);
     };
-
     float getNextSample(int channel) //noexcept
     {
         float sample1 = 0.f;
@@ -64,27 +50,24 @@ public:
         else if (waveform2 == 3)
             sample2 = oscSine2.getNextSample(channel);
         
-        //return sample1 * mix + sample2 * (1.f-mix); //mix of both oscillators
         float mixx = sample1 * mix + sample2 * (1.f-mix);
-        //float lfoMix = mixx * lfo.getNextSample(channel);
         float lfoMix = mixx * (1 - lfo.getNextSample(channel)*lfoAmp);
         
         return lfoMix * velocity;
     };
     float getFrequency()
     {
-//        if (waveform1 == 1)
-//            return oscSquare1.getFrequency();
-//        else if (waveform1 == 2)
-//            return oscSaw1.getFrequency();
-//        else if (waveform1 == 3)
-//            return oscSine1.getFrequency();
-//        return 0.0;
         return frequency0;
-            
     };
-
+    
     // Envelope functions
+    bool isActive ()
+    {
+        if (!env.getFin())
+            return true;
+        else
+            return false;
+    };
     float getEnvelope(int channel)
     {
         return env.getEnvelope(channel);
@@ -105,11 +88,6 @@ public:
     {
         env.setRelease(r);
     };
-    
-//    void setCarrAmp(float a, int channel)
-//    {
-//        env.setCarrAmp(a, channel);
-//    };
     void setNoteOn(bool n)
     {
         env.setNoteOn(n);
@@ -124,7 +102,6 @@ public:
     // Filter functions
     void setCut(float x){
         filter.setCut(x);
-        //filterEnv.setCut(x);
     };
     void setRes(float x){
         filter.setRes(x);
@@ -146,21 +123,6 @@ public:
     };
     void initFilter(float cut, float res){
         filter.initFilter(cut, res);
-
-    };
-    void setSampleRate(float sr)
-    {
-        oscSquare1.setSampleRate(sr);
-        oscSine1.setSampleRate(sr);
-        oscSaw1.setSampleRate(sr);
-        oscSquare2.setSampleRate(sr);
-        oscSine2.setSampleRate(sr);
-        oscSaw2.setSampleRate(sr);
-        env.setSampleRate(sr);
-        filter.setSampleRate(sr);
-        filterEnv.setSampleRate(sr);
-        lfo.setSampleRate(sr);
-        lfoF.setSampleRate(sr);
     };
     void setWaveform1(int w)
     {
@@ -214,12 +176,27 @@ public:
     {
         lfoAmp = a;
     };
-    
     void setVelocity(float vel)
     {
         velocity = vel;
-    }
-    
+    };
+
+    // sample rate
+    void setSampleRate(float sr)
+    {
+        oscSquare1.setSampleRate(sr);
+        oscSine1.setSampleRate(sr);
+        oscSaw1.setSampleRate(sr);
+        oscSquare2.setSampleRate(sr);
+        oscSine2.setSampleRate(sr);
+        oscSaw2.setSampleRate(sr);
+        env.setSampleRate(sr);
+        filter.setSampleRate(sr);
+        filterEnv.setSampleRate(sr);
+        lfo.setSampleRate(sr);
+        lfoF.setSampleRate(sr);
+    };
+
 private:
     SineOscillator oscSine1;
     SquareOscillator oscSquare1;
@@ -235,7 +212,7 @@ private:
     SineOscillator lfo;
     float lfoAmp;
     float velocity;
-    SineOscillator lfoF;
+    SineOscillator lfoF; //lfo del filtro
     float frequency0;
 };
 

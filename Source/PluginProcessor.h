@@ -282,7 +282,6 @@ public:
     void setSemi(float s, int osc)
     {
         semitone[osc] = s;
-        //resetVoices();
     };
     float getSemi(int osc)
     {
@@ -291,7 +290,6 @@ public:
     void setFine(float f, int osc)
     {
         fine[osc] = f;
-        //resetVoices();
     };
     float getFine(int osc)
     {

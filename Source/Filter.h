@@ -11,8 +11,6 @@
 class Filter{
 
 public:
-    //==============================================================================
-    //Setters
     Filter(){
         z1L = 0.0;
         z2L = 0.0;
@@ -38,8 +36,6 @@ public:
         a0L = (1-b2L) * sqrt(1 - b1L * b1L / (4 * b2L));
         a0R = a0L;
     };
-    
-    //getters (for gui)
     float getRes(){
         return res;
     };
@@ -48,7 +44,6 @@ public:
     };
     
     float processSample(float xn, int channel, float env, float lfoAmount){
-        //cut = env;
         cut = env * lfoAmount;
         updateFilter();
         if (channel == 0)
@@ -65,12 +60,9 @@ public:
         }
         else //channel == 1
         {
-            // READ: Delay samples y(n-1), y(n-2)
             float yn_2 = z2R;
             float yn_1 = z1R;
-            // Difference Equation
             float yn = a0R * xn - b1R * yn_1 - b2R * yn_2;
-            // WRITE: Delay with current y(n)
             z2R = z1R;
             z1R = yn;
             return yn;

@@ -10,31 +10,26 @@
 
 class SawOscillator {
 public:
-    SawOscillator()
-    {
-    };
     void setFrequency (float frequency)
     {
-        carrFreq = frequency;
-        carrFreq0 = frequency;
-        auto cyclesPerSample = carrFreq / currentSampleRate;
+        freq = frequency;
+        auto cyclesPerSample = freq / currentSampleRate;
         angleDelta = cyclesPerSample * juce::MathConstants<double>::twoPi;
     };
     float getNextSample(int channel)
     {
-        // twoPi
         currentAngle[channel] += angleDelta;
-        float sample = currentAngle[channel] / juce::MathConstants<double>::twoPi;
+        float sample = 2.f * currentAngle[channel] / juce::MathConstants<double>::twoPi - 1.f;
         if(currentAngle[channel] >= juce::MathConstants<double>::twoPi)
         {
             currentAngle[channel] -= juce::MathConstants<double>::twoPi;
-            sample = 0.0;
+            sample = - 1.f;
         }
         return sample;
     };
     float getFrequency()
     {
-        return carrFreq0;
+        return freq;
     };
     void setSampleRate(float sr)
     {
@@ -44,10 +39,7 @@ public:
 private:
     float currentAngle[2], angleDelta;
     float currentSampleRate;
-    float carrFreq, carrFreq0;
-    float modAmp;
-    float modAmpSmoothed;
-    float amp;
+    float freq;
 };
 
 #endif /* SawOscillator_h */

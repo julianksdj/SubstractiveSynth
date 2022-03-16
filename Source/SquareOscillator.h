@@ -10,30 +10,25 @@
 
 class SquareOscillator {
 public:
-    SquareOscillator()
-    {
-        modAmp = 0.0000001;
-    };
     void setFrequency (float frequency)
     {
-        carrFreq = frequency;
-        carrFreq0 = frequency;
-        auto cyclesPerSample = carrFreq / currentSampleRate;
+        freq = frequency;
+        auto cyclesPerSample = freq / currentSampleRate;
         angleDelta = cyclesPerSample * juce::MathConstants<double>::twoPi;
     };
     float getNextSample(int channel)
     {
-        float sample = std::sin(currentAngle[channel]);
+        float sample = 0.f;
         // 0 to pi
         if(currentAngle[channel] < juce::MathConstants<double>::pi)
         {
-            sample = 1.0;
+            sample = 1.f;
             currentAngle[channel] += angleDelta;
         }
         // pi to twoPi
         else
         {
-            sample = 0.0;
+            sample = -1.f;
             currentAngle[channel] += angleDelta;
         }
         // twoPi
@@ -45,7 +40,7 @@ public:
     };
     float getFrequency()
     {
-        return carrFreq0;
+        return freq;
     };
     void setSampleRate(float sr)
     {
@@ -55,10 +50,7 @@ public:
 private:
     float currentAngle[2], angleDelta;
     float currentSampleRate;
-    float carrFreq;
-    float modAmp;
-    float modAmpSmoothed;
-    float carrFreq0; //this variable stores the frequency of the note played without detune
+    float freq;
 };
 
 #endif /* SquareOscillator_h */
