@@ -129,6 +129,7 @@ void SubstractiveSynthAudioProcessor::prepareToPlay (double sampleRate, int samp
     
     //delay
     delay.initDelay(currentSampleRate, 300.f, 20.f, 0.f);
+    
 }
 
 void SubstractiveSynthAudioProcessor::releaseResources()

@@ -12,11 +12,7 @@
       <FILE id="WtGKXi" name="Filter.h" compile="0" resource="0" file="Source/Filter.h"/>
       <FILE id="q8gokg" name="FilterEnvelope.h" compile="0" resource="0"
             file="Source/FilterEnvelope.h"/>
-      <FILE id="mVuZw0" name="SawOscillator.h" compile="0" resource="0" file="Source/SawOscillator.h"/>
-      <FILE id="xLmqf9" name="SineOscillator.h" compile="0" resource="0"
-            file="Source/SineOscillator.h"/>
-      <FILE id="guDg6h" name="SquareOscillator.h" compile="0" resource="0"
-            file="Source/SquareOscillator.h"/>
+      <FILE id="mVuZw0" name="Oscillator.h" compile="0" resource="0" file="Source/Oscillator.h"/>
       <FILE id="yctKs2" name="Voice.h" compile="0" resource="0" file="Source/Voice.h"/>
       <FILE id="vsgNgr" name="PluginProcessor.h" compile="0" resource="0"
             file="Source/PluginProcessor.h"/>

@@ -76,9 +76,6 @@ public:
         voice->setSampleRate(currentSampleRate);
         voice->setWaveform1(waveform1);
         voice->setWaveform2(waveform2);
-//        float freq2a = frequency * pow(2,octave[0] + semitone[0]/12.f + fine[0]/1200.f);
-//        float freq2b = frequency * pow(2,octave[1] + semitone[1]/12.f  + fine[1]/1200.f);
-        //voice->setFrequency(freq2a, freq2b
         voice->setFrequency(frequency, octave, semitone, fine);
         
         // Amp Envelope
@@ -101,6 +98,7 @@ public:
         //LFO
         voice->setFrequencyLFO(lfoFreq);
         voice->setLfoAmp(lfoAmp);
+        voice->setWaveformLFO(3);
         
         //velocity
         voice->setVelocity(velocity);
@@ -345,6 +343,7 @@ public:
     void setDelayDry(float dw){
         delay.setDelayDry(dw);
     };
+
         
 private:
     float currentSampleRate = 0.0;
