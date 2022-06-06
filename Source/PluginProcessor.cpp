@@ -196,27 +196,10 @@ void SubstractiveSynthAudioProcessor::processBlock (juce::AudioBuffer<float>& bu
     for (int channel = 0; channel < totalNumOutputChannels; ++channel)
     {
         auto* channelData = buffer.getWritePointer(channel);
-        for (auto sample = 0; sample < numSamples; ++sample)
-        {
-            float sumOsc = 0.0;
-            // sum of voices
-            for (auto voiceIndex = 0; voiceIndex < voices.size(); ++voiceIndex)
-            {
-                auto* voice = voices.getUnchecked(voiceIndex);
-                auto ampEnv = voice->getEnvelope(channel);
-                auto filtEnv = voice->getFilterEnvelope(channel);
-                if(voice->isActive())
-                {
-                    auto currentSample = voice->getNextSample(channel)*ampEnv*0.125f;
-                    auto filteredSample = voice->processSample(currentSample, channel, filtEnv, lfoFilt);// filter
-                    sumOsc += filteredSample;
-                }
-                else
-                    voices.remove(voiceIndex);
-            }
-            channelData[sample] += sumOsc;
-        }
-        
+        //oscillators + amplitude envelope
+        processOscAmp(channelData, channel);
+        //filter + filter envelope
+        processFilter(channelData, channel, numSamples, lfoFilt);
         //delay
         delay.processDelay(channelData, channel, numSamples);
     }

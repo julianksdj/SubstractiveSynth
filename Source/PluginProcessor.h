@@ -57,6 +57,7 @@ public:
 
     //==============================================================================
         
+    //Voices
     int getVoicesSize()
     {
         return voices.size();
@@ -125,7 +126,6 @@ public:
                 voices.remove(voiceIndex);
         }
     };
-    //provisional
     void resetVoices()
     {
         for (auto voiceIndex = 0; voiceIndex < voices.size(); ++voiceIndex)
@@ -134,6 +134,8 @@ public:
             voices[voiceIndex]->resetEnvCount();
         }
     };
+    
+    //Envelope
     void setAttack(float a)
     {
         attack = a;
@@ -166,6 +168,8 @@ public:
     {
         return release;
     };
+    
+    // Filter
     void setCut(float x)
     {
         cut = x;
@@ -190,25 +194,13 @@ public:
     {
         return res;
     };
-    
-    // waveforms
-    void setWaveform1(int x)
+    void processFilter(float *channelData, int channel, int numSamples, float lfoFilt)
     {
-        waveform1 = x;
-        resetVoices();
-    };
-    void setWaveform2(int x)
-    {
-        waveform2 = x;
-        resetVoices();
-    };
-    int getWaveform1()
-    {
-        return waveform1;
-    };
-    int getWaveform2()
-    {
-        return waveform2;
+        for (auto voiceIndex = 0; voiceIndex < voices.size(); ++voiceIndex)
+        {
+            auto* voice = voices.getUnchecked(voiceIndex);
+            voice->processFilter(channelData, channel, numSamples, lfoFilt);
+        }
     };
     
     // Filter envelope
@@ -256,6 +248,28 @@ public:
     {
         return envAmount;
     };
+    
+    // waveforms
+    void setWaveform1(int x)
+    {
+        waveform1 = x;
+        resetVoices();
+    };
+    void setWaveform2(int x)
+    {
+        waveform2 = x;
+        resetVoices();
+    };
+    int getWaveform1()
+    {
+        return waveform1;
+    };
+    int getWaveform2()
+    {
+        return waveform2;
+    };
+    
+    //Mix
     void setMix(float m)
     {
         mix = m;
@@ -268,10 +282,11 @@ public:
     {
         return mix;
     };
+    
+    //Oscillators
     void setOct(float o, int osc)
     {
         octave[osc] = o;
-        //resetVoices();
     };
     float getOct(int osc)
     {
@@ -292,6 +307,27 @@ public:
     float getFine(int osc)
     {
         return fine[osc];
+    };
+    void processOscAmp(float *channelData, int channel)
+    {
+        for (auto sample = 0; sample < numSamples; ++sample)
+        {
+            float sumOsc = 0.0;
+            // sum of voices
+            for (auto voiceIndex = 0; voiceIndex < voices.size(); ++voiceIndex)
+            {
+                auto* voice = voices.getUnchecked(voiceIndex);
+                auto ampEnv = voice->getEnvelope(channel);
+                if(voice->isActive())
+                {
+                    auto currentSample = voice->getNextSample(channel)*ampEnv*0.125f;
+                    sumOsc += currentSample;
+                }
+                else
+                    voices.remove(voiceIndex);
+            }
+            channelData[sample] += sumOsc;
+        }
     };
     
     //LFO
@@ -319,6 +355,8 @@ public:
     {
         return lfoAmp;
     };
+    
+    //Velocity
     void setVelocity(float vel)
     {
         velocity = vel;

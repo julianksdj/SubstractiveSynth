@@ -11,7 +11,6 @@
 #include "Envelope.h"
 #include "Oscillator.h"
 #include "Filter.h"
-#include "FilterEnvelope.h"
 
 class Voice
 {
@@ -74,12 +73,14 @@ public:
     void setNoteOn(bool n)
     {
         env.setNoteOn(n);
-        filterEnv.setNoteOn(n);
+        //filterEnv.setNoteOn(n);
+        filter.setNoteOn(n);
     };
     void resetEnvCount()
     {
         env.resetEnvCount();
-        filterEnv.resetEnvCount();
+        //filterEnv.resetEnvCount();
+        filter.resetEnvCount();
     };
     
     // Filter functions
@@ -98,11 +99,10 @@ public:
     float getCut(){
         return filter.getCut();
     };
-    float processSample(float xn, int channel, float env, float lfo){
+    void processFilter(float *channelData, int channel, int numSamples, float lfo){
         
         float lfoAmount = (1 - lfoF.getNextSample(channel)*lfo);
-        float y = filter.processSample(xn, channel, env, lfoAmount);
-        return y;
+        filter.processFilter(channelData, channel, numSamples, lfoAmount);
     };
     void initFilter(float cut, float res){
         filter.initFilter(cut, res);
@@ -121,29 +121,29 @@ public:
     // Filter Envelope
     void setFilterAttack(float a)
     {
-        filterEnv.setAttack(a);
+        filter.setAttack(a);
     };
     void setFilterDecay(float d)
     {
-        filterEnv.setDecay(d);
+        filter.setDecay(d);
     };
     void setFilterSustain(float s)
     {
-        filterEnv.setSustain(s);
+        filter.setSustain(s);
     };
     void setFilterRelease(float r)
     {
-        filterEnv.setRelease(r);
+        filter.setRelease(r);
     };
     float getFilterEnvelope(int channel)
     {
-        return filterEnv.getEnvelope(channel);
+        return filter.getEnvelope(channel);
     };
     void setFilterEnv(float env){
-        filterEnv.setFilterEnv(env);
+        filter.setFilterEnv(env);
     };
     void initFilterEnv(float cutoff, float env){
-        filterEnv.initFilterEnv(cutoff,env);
+        filter.initFilterEnv(cutoff,env);
     };
     void setMix(float m)
     {
@@ -177,7 +177,6 @@ public:
         osc2.setSampleRate(sr);
         env.setSampleRate(sr);
         filter.setSampleRate(sr);
-        filterEnv.setSampleRate(sr);
         lfo.setSampleRate(sr);
         lfoF.setSampleRate(sr);
     };
@@ -190,7 +189,6 @@ private:
     Filter filter;
     int waveform1, waveform2;
     Envelope env;
-    FilterEnvelope filterEnv;
     float mix;
     Oscillator lfo;
     float lfoAmp;
