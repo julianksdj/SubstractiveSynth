@@ -73,36 +73,39 @@ public:
     {
         return delaySync;
     };
-    void processDelay(float * channelData, int channel, int sample)
+    void processDelay(float * channelData, int channel, int numSamples)
     {
-        // Do LEFT (MONO) Channel
-        // Read the Input
-        float xn = channelData[sample];
-        // Read the output of the delay at readIndex
-        float yn;
-        if(channel == 0)
-            yn = pBufferR[readIndex[channel]];
-        else
-            yn = pBufferL[readIndex[channel]];
-        // if zero delay, just pass the input to output
-        if(delaySamples == 0)
-            yn = xn;
-        // write the input to the delay
-        if(channel == 0)
-            pBufferL[writeIndex[channel]] = xn + feedback*yn;
-        else
-            pBufferR[writeIndex[channel]] = xn + feedback*yn;
-        // create the wet/dry mix and write to the output buffer
-        // dry = 1 - wet
-        channelData[sample] = wetLevel * yn + (1.f - wetLevel)*xn;
-        
-        // incremnent the pointers and wrap if necessary
-        writeIndex[channel]++;
-        if(writeIndex[channel] >= bufferSize)
-             writeIndex[channel] = 0;
-        readIndex[channel]++;
-        if(readIndex[channel] >= bufferSize)
-             readIndex[channel] = 0;
+        for (int sample=0; sample<numSamples; sample++)
+        {
+            // Do LEFT (MONO) Channel
+            // Read the Input
+            float xn = channelData[sample];
+            // Read the output of the delay at readIndex
+            float yn;
+            if(channel == 0)
+                yn = pBufferR[readIndex[channel]];
+            else
+                yn = pBufferL[readIndex[channel]];
+            // if zero delay, just pass the input to output
+            if(delaySamples == 0)
+                yn = xn;
+            // write the input to the delay
+            if(channel == 0)
+                pBufferL[writeIndex[channel]] = xn + feedback*yn;
+            else
+                pBufferR[writeIndex[channel]] = xn + feedback*yn;
+            // create the wet/dry mix and write to the output buffer
+            // dry = 1 - wet
+            channelData[sample] = wetLevel * yn + (1.f - wetLevel)*xn;
+            
+            // incremnent the pointers and wrap if necessary
+            writeIndex[channel]++;
+            if(writeIndex[channel] >= bufferSize)
+                 writeIndex[channel] = 0;
+            readIndex[channel]++;
+            if(readIndex[channel] >= bufferSize)
+                 readIndex[channel] = 0;
+        }
     };
     void initDelay(float sr, float dTime, float dFeed, float dWet)
     {

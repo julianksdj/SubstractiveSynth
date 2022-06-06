@@ -169,9 +169,10 @@ void SubstractiveSynthAudioProcessor::processBlock (juce::AudioBuffer<float>& bu
     juce::ScopedNoDenormals noDenormals;
     auto totalNumInputChannels  = getTotalNumInputChannels();
     auto totalNumOutputChannels = getTotalNumOutputChannels();
+    numSamples = buffer.getNumSamples();
     
     for (auto i = totalNumInputChannels; i < totalNumOutputChannels; ++i)
-        buffer.clear (i, 0, buffer.getNumSamples());
+        buffer.clear (i, 0, numSamples);
     
     // MIDI HANDLING -----------------------------------------------------------------------------------------
     juce::MidiBuffer::Iterator it(midiMessages);
@@ -195,7 +196,7 @@ void SubstractiveSynthAudioProcessor::processBlock (juce::AudioBuffer<float>& bu
     for (int channel = 0; channel < totalNumOutputChannels; ++channel)
     {
         auto* channelData = buffer.getWritePointer(channel);
-        for (auto sample = 0; sample < buffer.getNumSamples(); ++sample)
+        for (auto sample = 0; sample < numSamples; ++sample)
         {
             float sumOsc = 0.0;
             // sum of voices
@@ -214,10 +215,10 @@ void SubstractiveSynthAudioProcessor::processBlock (juce::AudioBuffer<float>& bu
                     voices.remove(voiceIndex);
             }
             channelData[sample] += sumOsc;
-            
-            //delay
-            delay.processDelay(channelData, channel, sample);
         }
+        
+        //delay
+        delay.processDelay(channelData, channel, numSamples);
     }
 }
 

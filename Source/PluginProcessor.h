@@ -362,6 +362,7 @@ private:
     float lfoFreq, lfoAmp, lfoFilt;
     float velocity;
     Delay delay;
+    int numSamples;
     
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (SubstractiveSynthAudioProcessor)
