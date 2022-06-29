@@ -34,10 +34,19 @@ public:
         }
         else //released note on the keyboard
         {
-            if(currentFreq[channel]> (20.f+(releaseFreq[channel]-20.f)/releaseSamples))
+            //if(currentFreq[channel]> (20.f+(releaseFreq[channel]-20.f)/releaseSamples))
+            //{
+            //    currentFreq[channel] = currentFreq[channel] - envAmount*(releaseFreq[channel] - //20.f)/releaseSamples;
+            //}
+            if(currentFreq[channel] > (20.f+(releaseFreq[channel]-20.f)/releaseSamples))
             {
+
                 currentFreq[channel] = currentFreq[channel] - envAmount*(releaseFreq[channel] - 20.f)/releaseSamples;
+                if (currentFreq[channel] < 20.f)
+                    currentFreq[channel] = 35.f;
             }
+            
+                
         }
         envCount[channel]++;
         return currentFreq[channel];

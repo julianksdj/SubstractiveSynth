@@ -60,78 +60,82 @@ public:
     //Voices
     int getVoicesSize()
     {
-        return voices.size();
+        //return voices.size();
+        return voicesSize;
     };
     void addVoice(float frequency)
     {
-        for (auto voiceIndex = 0; voiceIndex < voices.size(); ++voiceIndex)
-        {
-            if (voices.getUnchecked(voiceIndex)->getFrequency()==frequency)
-            {
-                voices.remove(voiceIndex);
-            }
-        }
-        Voice *voice = new Voice();
-        
-        voice->setNoteOn(true);
-        voice->setSampleRate(currentSampleRate);
-        voice->setWaveform1(waveform1);
-        voice->setWaveform2(waveform2);
-        voice->setFrequency(frequency, octave, semitone, fine);
+
+        Voice voice;
+
+        voice.setNoteOn(true);
+        voice.setSampleRate(currentSampleRate);
+        voice.setWaveform1(waveform1);
+        voice.setWaveform2(waveform2);
+        voice.setFrequency(frequency, octave, semitone, fine);
         
         // Amp Envelope
-        voice->setAttack(attack);
-        voice->setDecay(decay);
-        voice->setSustain(sustain);
-        voice->setRelease(release);
-        voice->initFilter(cut, res);
+        voice.setAttack(attack);
+        voice.setDecay(decay);
+        voice.setSustain(sustain);
+        voice.setRelease(release);
+        voice.initFilter(cut, res);
         
         // Filter Envelope
-        voice->setFilterAttack(attackF);
-        voice->setFilterDecay(decayF);
-        voice->setFilterSustain(sustainF);
-        voice->setFilterRelease(releaseF);
-        voice->initFilterEnv(cut, envAmount);
+        voice.setFilterAttack(attackF);
+        voice.setFilterDecay(decayF);
+        voice.setFilterSustain(sustainF);
+        voice.setFilterRelease(releaseF);
+        voice.initFilterEnv(cut, envAmount);
         
         //Mix
-        voice->setMix(mix);
+        voice.setMix(mix);
         
         //LFO
-        voice->setFrequencyLFO(lfoFreq);
-        voice->setLfoAmp(lfoAmp);
-        voice->setWaveformLFO(3);
+        voice.setFrequencyLFO(lfoFreq);
+        voice.setLfoAmp(lfoAmp);
+        voice.setWaveformLFO(3);
         
         //velocity
-        voice->setVelocity(velocity);
+        voice.setVelocity(velocity);
         
-        voices.add(voice);
-    };
-    void deactivateVoice(float freq)
-    {
-        for (auto voiceIndex = 0; voiceIndex < voices.size(); ++voiceIndex)
+        
+        if (writeVoicePos >= voicesSize)
         {
-            //float freq2 = freq * pow(2,octave[0] + semitone[0]/12.f + fine[0]/1200.f);
-            if (voices[voiceIndex]->getFrequency() == freq)
+            writeVoicePos = 0;
+            voices[writeVoicePos] = voice;
+        }
+        else
+        {
+            voices[writeVoicePos] = voice;
+            writeVoicePos++;
+        }
+        
+        
+
+        
+    };
+    void deactivateVoice(float freq) //release note
+    {
+        for (auto voiceIndex = 0; voiceIndex < voicesSize; ++voiceIndex)
+        {
+            if (voices[voiceIndex].getFrequency() == freq)
             {
-                voices[voiceIndex]->setNoteOn(false);
-                voices[voiceIndex]->resetEnvCount();
+                voices[voiceIndex].setNoteOn(false);
+                voices[voiceIndex].resetEnvCount();
             }
         }
-    };
-    void removeVoice(float freq)
-    {
-        for (auto voiceIndex = 0; voiceIndex < voices.size(); ++voiceIndex)
-        {
-            if (voices[voiceIndex]->getFrequency() == freq)
-                voices.remove(voiceIndex);
-        }
+        writeVoicePos--;
+        if(writeVoicePos<0)
+            writeVoicePos=0;
     };
     void resetVoices()
     {
-        for (auto voiceIndex = 0; voiceIndex < voices.size(); ++voiceIndex)
+        for (auto voiceIndex = 0; voiceIndex < voicesSize; ++voiceIndex)
         {
-            voices[voiceIndex]->setNoteOn(false);
-            voices[voiceIndex]->resetEnvCount();
+            voices[voiceIndex].setNoteOn(false);
+            voices[voiceIndex].resetEnvCount();
+            //writeVoicePos = 0;
         }
     };
     
@@ -173,17 +177,17 @@ public:
     void setCut(float x)
     {
         cut = x;
-        for (auto voiceIndex = 0; voiceIndex < voices.size(); ++voiceIndex)
+        for (auto voiceIndex = 0; voiceIndex < voicesSize; ++voiceIndex)
         {
-            voices[voiceIndex]->setCut(x);
+            voices[voiceIndex].setCut(x);
         }
     };
     void setRes(float x)
     {
         res = x;
-        for (auto voiceIndex = 0; voiceIndex < voices.size(); ++voiceIndex)
+        for (auto voiceIndex = 0; voiceIndex < voicesSize; ++voiceIndex)
         {
-            voices[voiceIndex]->setRes(x);
+            voices[voiceIndex].setRes(x);
         }
     };
     float getCut()
@@ -194,14 +198,35 @@ public:
     {
         return res;
     };
+    //void processFilter(float *channelData, int channel, int numSamples, float lfoFilt)
+    //{
+    //    for (auto voiceIndex = 0; voiceIndex < voicesSize; ++voiceIndex)
+    //    {
+    //
+    //        voices[voiceIndex].processFilter(channelData, channel, numSamples, lfoFilt);
+    //    }
+    //};
     void processFilter(float *channelData, int channel, int numSamples, float lfoFilt)
     {
-        for (auto voiceIndex = 0; voiceIndex < voices.size(); ++voiceIndex)
+
+        for (auto sample = 0; sample < numSamples; ++sample)
         {
-            auto* voice = voices.getUnchecked(voiceIndex);
-            voice->processFilter(channelData, channel, numSamples, lfoFilt);
+            float sumOsc = 0.f;
+            // sum of voices
+            for (auto voiceIndex = 0; voiceIndex < voicesSize; ++voiceIndex)
+            {
+                //auto filterEnv = voices[voiceIndex].getFilterEnvelope(channel);
+                auto filterEnv = 1000.f;
+                if(voices[voiceIndex].isActive())
+                {
+                    auto currentSample = voices[voiceIndex].getNextFilterSample(sample, channel, filterEnv, lfoFilt);
+                    sumOsc += currentSample;
+                }
+            }
+            channelData[sample] += sumOsc;
         }
     };
+    
     
     // Filter envelope
     void setFilterAttack(float a)
@@ -238,10 +263,10 @@ public:
     };
     void setFilterEnv(float env)
     {
-        envAmount = env;
-        for (auto voiceIndex = 0; voiceIndex < voices.size(); ++voiceIndex)
+        filterEnvAmount = env;
+        for (auto voiceIndex = 0; voiceIndex < voicesSize; ++voiceIndex)
         {
-            voices[voiceIndex]->setFilterEnv(env);
+            voices[voiceIndex].setFilterEnv(env);
         }
     };
     float getFilterEnv()
@@ -273,9 +298,9 @@ public:
     void setMix(float m)
     {
         mix = m;
-        for (auto voiceIndex = 0; voiceIndex < voices.size(); ++voiceIndex)
+        for (auto voiceIndex = 0; voiceIndex < voicesSize; ++voiceIndex)
         {
-            voices[voiceIndex]->setMix(m);
+            voices[voiceIndex].setMix(m);
         }
     };
     float getMix()
@@ -314,17 +339,14 @@ public:
         {
             float sumOsc = 0.0;
             // sum of voices
-            for (auto voiceIndex = 0; voiceIndex < voices.size(); ++voiceIndex)
+            for (auto voiceIndex = 0; voiceIndex < voicesSize; ++voiceIndex)
             {
-                auto* voice = voices.getUnchecked(voiceIndex);
-                auto ampEnv = voice->getEnvelope(channel);
-                if(voice->isActive())
+                auto ampEnv = voices[voiceIndex].getEnvelope(channel);
+                if(voices[voiceIndex].isActive())
                 {
-                    auto currentSample = voice->getNextSample(channel)*ampEnv*0.125f;
+                    auto currentSample = voices[voiceIndex].getNextSample(channel)*ampEnv*0.125f;
                     sumOsc += currentSample;
                 }
-                else
-                    voices.remove(voiceIndex);
             }
             channelData[sample] += sumOsc;
         }
@@ -342,9 +364,9 @@ public:
     void setLfoAmp(float a)
     {
         lfoAmp = a;
-        for (auto voiceIndex = 0; voiceIndex < voices.size(); ++voiceIndex)
+        for (auto voiceIndex = 0; voiceIndex < voicesSize; ++voiceIndex)
         {
-            voices[voiceIndex]->setLfoAmp(a);
+            voices[voiceIndex].setLfoAmp(a);
         }
     };
     void setLfoFilt(float f)
@@ -385,7 +407,9 @@ public:
         
 private:
     float currentSampleRate = 0.0;
-    juce::OwnedArray<Voice> voices; //voices array
+    Voice voices[4];
+    int voicesSize;
+    int writeVoicePos;
     
     // GUI parameters
     float attack, decay, sustain, release; //amp adsr
@@ -394,6 +418,7 @@ private:
     int waveform1;
     int waveform2;
     float envAmount;
+    float filterEnvAmount;
     float attackF, decayF, sustainF, releaseF; //filter adsr
     float mix;
     float octave[2], semitone[2], fine[2];

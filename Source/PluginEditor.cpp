@@ -354,7 +354,7 @@ void SubstractiveSynthAudioProcessorEditor::paint (juce::Graphics& g)
     g.drawImageAt (background, 0, 0);
     g.drawImage(logo, 20, 345, 120, 27, 0, 0, 600, 135);
     int ledWidth = 18;
-    int ledSWidth = 14;
+    //int ledSWidth = 14;
 
     if (waveLed1 == 1)
     {

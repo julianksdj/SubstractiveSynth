@@ -7,7 +7,7 @@
 
 #ifndef Filter_h
 #define Filter_h
-#include "FilterEnvelope.h"
+//#include "FilterEnvelope.h"
 
 class Filter{
 
@@ -43,35 +43,61 @@ public:
     float getCut(){
         return cut;
     };
-    void processFilter(float *channelData, float channel, float numSamples, float lfoAmount){
-        for (int i=0; i<numSamples; i++)
+    //void processFilter(float *channelData, float channel, float numSamples, float lfoAmount){
+    //    for (int i=0; i<numSamples; i++)
+    //    {
+    //        auto env = filterEnv.getEnvelope(channel);
+    //        cut = env * lfoAmount;
+    //        updateFilter();
+    //        if (channel == 0)
+    //        {
+    //            // READ: Delay samples y(n-1), y(n-2)
+    //            float yn_2 = z2L;
+    //            float yn_1 = z1L;
+    //            // Difference Equation
+    //            float yn = a0L * channelData[i] - b1L * yn_1 - b2L * yn_2;
+    //            // WRITE: Delay with current y(n)
+    //            z2L = z1L;
+    //            z1L = yn;
+    //            channelData[i] = yn;
+    //        }
+    //        else //channel == 1
+    //        {
+    //            float yn_2 = z2R;
+    //            float yn_1 = z1R;
+    //            float yn = a0R * channelData[i] - b1R * yn_1 - b2R * yn_2;
+    //            z2R = z1R;
+    //            z1R = yn;
+    //            channelData[i] = yn;
+    //        }
+    //    }
+    //};
+    float processSample(float xn, int channel, float env, float lfoAmount){
+        cut = env * lfoAmount;
+        updateFilter();
+        if (channel == 0)
         {
-            auto env = filterEnv.getEnvelope(channel);
-            cut = env * lfoAmount;
-            updateFilter();
-            if (channel == 0)
-            {
-                // READ: Delay samples y(n-1), y(n-2)
-                float yn_2 = z2L;
-                float yn_1 = z1L;
-                // Difference Equation
-                float yn = a0L * channelData[i] - b1L * yn_1 - b2L * yn_2;
-                // WRITE: Delay with current y(n)
-                z2L = z1L;
-                z1L = yn;
-                channelData[i] = yn;
-            }
-            else //channel == 1
-            {
-                float yn_2 = z2R;
-                float yn_1 = z1R;
-                float yn = a0R * channelData[i] - b1R * yn_1 - b2R * yn_2;
-                z2R = z1R;
-                z1R = yn;
-                channelData[i] = yn;
-            }
+            // READ: Delay samples y(n-1), y(n-2)
+            float yn_2 = z2L;
+            float yn_1 = z1L;
+            // Difference Equation
+            float yn = a0L * xn - b1L * yn_1 - b2L * yn_2;
+            // WRITE: Delay with current y(n)
+            z2L = z1L;
+            z1L = yn;
+            return yn;
+        }
+        else //channel == 1
+        {
+            float yn_2 = z2R;
+            float yn_1 = z1R;
+            float yn = a0R * xn - b1R * yn_1 - b2R * yn_2;
+            z2R = z1R;
+            z1R = yn;
+            return yn;
         }
     };
+        
     void initFilter(float c, float r){
         setCut(c);
         setRes(r);
@@ -80,43 +106,43 @@ public:
     void setSampleRate(float sr)
     {
         currentSampleRate = sr;
-        filterEnv.setSampleRate(sr);
+        //filterEnv.setSampleRate(sr);
     };
     
-    void setAttack(float a)
-    {
-        filterEnv.setAttack(a);
-    };
-    void setDecay(float d)
-    {
-        filterEnv.setDecay(d);
-    };
-    void setSustain(float s)
-    {
-        filterEnv.setSustain(s);
-    };
-    void setRelease(float r)
-    {
-        filterEnv.setRelease(r);
-    };
-    void setNoteOn(bool n)
-    {
-        filterEnv.setNoteOn(n);
-    };
-    void resetEnvCount()
-    {
-        filterEnv.resetEnvCount();
-    };
-    float getEnvelope(int channel)
-    {
-        return filterEnv.getEnvelope(channel);
-    };
-    void setFilterEnv(float env){
-        filterEnv.setFilterEnv(env);
-    };
-    void initFilterEnv(float cutoff, float env){
-        filterEnv.initFilterEnv(cutoff,env);
-    };
+    //void setAttack(float a)
+    //{
+    //    filterEnv.setAttack(a);
+    //};
+    //void setDecay(float d)
+    //{
+    //    filterEnv.setDecay(d);
+    //};
+    //void setSustain(float s)
+    //{
+    //    filterEnv.setSustain(s);
+    //};
+    //void setRelease(float r)
+    //{
+    //    filterEnv.setRelease(r);
+    //};
+    //void setNoteOn(bool n)
+    //{
+    //    filterEnv.setNoteOn(n);
+    //};
+    //void resetEnvCount()
+    //{
+    //    filterEnv.resetEnvCount();
+    //};
+    //float getEnvelope(int channel)
+    //{
+    //    return filterEnv.getEnvelope(channel);
+    //};
+    //void setFilterEnv(float env){
+    //    filterEnv.setFilterEnv(env);
+    //};
+    //void initFilterEnv(float cutoff, float env){
+    //    filterEnv.initFilterEnv(cutoff,env);
+    //};
 private:
     float b2L, b2R, b1L, b1R, a0L, a0R; //filter coefficients
     float z1L, z1R, z2L, z2R; //delays
@@ -124,8 +150,8 @@ private:
     float frec; //normalized cutoff frequency
     float bw; //bandwith
     float currentSampleRate;
-    float envAmount;
-    FilterEnvelope filterEnv;
+    //float envAmount;
+    //FilterEnvelope filterEnv;
 };
 
 #endif /* Filter_h */

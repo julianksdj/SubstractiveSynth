@@ -19,6 +19,7 @@ public:
         envelope[0] = 0.0000002f;
         envelope[1] = 0.0000002f;
         fin = false;
+        //muted = false;
     };
     float getEnvelope(int channel)
     {
