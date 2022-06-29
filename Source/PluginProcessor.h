@@ -6,6 +6,8 @@
   ==============================================================================
 */
 
+#define NUM_VOICES 16
+
 #pragma once
 
 #include <JuceHeader.h>
@@ -79,6 +81,7 @@ public:
         voice.setDecay(decay);
         voice.setSustain(sustain);
         voice.setRelease(release);
+        
         voice.initFilter(cut, res);
         
         // Filter Envelope
@@ -86,7 +89,7 @@ public:
         voice.setFilterDecay(decayF);
         voice.setFilterSustain(sustainF);
         voice.setFilterRelease(releaseF);
-        voice.initFilterEnv(cut, envAmount);
+        voice.initFilterEnv(cut, filterEnvAmount);
         
         //Mix
         voice.setMix(mix);
@@ -198,35 +201,6 @@ public:
     {
         return res;
     };
-    //void processFilter(float *channelData, int channel, int numSamples, float lfoFilt)
-    //{
-    //    for (auto voiceIndex = 0; voiceIndex < voicesSize; ++voiceIndex)
-    //    {
-    //
-    //        voices[voiceIndex].processFilter(channelData, channel, numSamples, lfoFilt);
-    //    }
-    //};
-    void processFilter(float *channelData, int channel, int numSamples, float lfoFilt)
-    {
-
-        for (auto sample = 0; sample < numSamples; ++sample)
-        {
-            float sumOsc = 0.f;
-            // sum of voices
-            for (auto voiceIndex = 0; voiceIndex < voicesSize; ++voiceIndex)
-            {
-                //auto filterEnv = voices[voiceIndex].getFilterEnvelope(channel);
-                auto filterEnv = 1000.f;
-                if(voices[voiceIndex].isActive())
-                {
-                    auto currentSample = voices[voiceIndex].getNextFilterSample(sample, channel, filterEnv, lfoFilt);
-                    sumOsc += currentSample;
-                }
-            }
-            channelData[sample] += sumOsc;
-        }
-    };
-    
     
     // Filter envelope
     void setFilterAttack(float a)
@@ -271,7 +245,7 @@ public:
     };
     float getFilterEnv()
     {
-        return envAmount;
+        return filterEnvAmount;
     };
     
     // waveforms
@@ -333,7 +307,7 @@ public:
     {
         return fine[osc];
     };
-    void processOscAmp(float *channelData, int channel)
+    void processOsc(float *channelData, int channel)
     {
         for (auto sample = 0; sample < numSamples; ++sample)
         {
@@ -341,10 +315,12 @@ public:
             // sum of voices
             for (auto voiceIndex = 0; voiceIndex < voicesSize; ++voiceIndex)
             {
-                auto ampEnv = voices[voiceIndex].getEnvelope(channel);
                 if(voices[voiceIndex].isActive())
                 {
+                    auto ampEnv = voices[voiceIndex].getEnvelope(channel);
+                    auto filterEnv = voices[voiceIndex].getFilterEnvelope(channel);
                     auto currentSample = voices[voiceIndex].getNextSample(channel)*ampEnv*0.125f;
+                    currentSample = voices[voiceIndex].getNextFilterSample(currentSample, channel, filterEnv, lfoFilt);;
                     sumOsc += currentSample;
                 }
             }
@@ -407,7 +383,7 @@ public:
         
 private:
     float currentSampleRate = 0.0;
-    Voice voices[4];
+    Voice voices[NUM_VOICES];
     int voicesSize;
     int writeVoicePos;
     

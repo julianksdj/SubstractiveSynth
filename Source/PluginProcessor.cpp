@@ -110,6 +110,7 @@ void SubstractiveSynthAudioProcessor::prepareToPlay (double sampleRate, int samp
     sustainF = 1.f;
     releaseF = 0.0001f;
     envAmount = 0.f;
+    filterEnvAmount = 0.f;
     
     waveform1 = 1;
     waveform2 = 1;
@@ -130,8 +131,11 @@ void SubstractiveSynthAudioProcessor::prepareToPlay (double sampleRate, int samp
     //delay
     delay.initDelay(currentSampleRate, 300.f, 20.f, 0.f);
     
-    voicesSize = 4;
+    voicesSize = NUM_VOICES;
     writeVoicePos = 0;
+    
+    cut = 20000.f;
+    res = 0.1f;
     
     for (int i=0; i<voicesSize; i++)
     {
@@ -231,12 +235,10 @@ void SubstractiveSynthAudioProcessor::processBlock (juce::AudioBuffer<float>& bu
     // AUDIO PROCESSING --------------------------------------------------------------------------------------
     for (int channel = 0; channel < totalNumOutputChannels; ++channel)
     {
+    //int channel =0;
         auto* channelData = buffer.getWritePointer(channel);
-        //oscillators + amplitude envelope
-        //processOscAmp(channelData, channel);
-        processOscAmp(channelData, channel);
-        //filter + filter envelope
-        //processFilter(channelData, channel, numSamples, lfoFilt);
+        //oscillators + amplitude envelope + filter
+        processOsc(channelData, channel);
         //delay
         delay.processDelay(channelData, channel, numSamples);
     }

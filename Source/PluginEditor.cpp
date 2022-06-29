@@ -607,7 +607,7 @@ void SubstractiveSynthAudioProcessorEditor::handleNoteOn (juce::MidiKeyboardStat
     //printf("\nNOTE PRESSED\n");
     //printf("Received note %d\n",midiNoteNumber);
     // frequency calculation from midi note data
-    double nota = 0.0;
+    float nota = 0.0;
     nota = juce::MidiMessage::getMidiNoteInHertz (midiNoteNumber);
     //printf("Calculated frequency %f\n",nota);
     audioProcessor.setVelocity(1.f);

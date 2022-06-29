@@ -98,11 +98,7 @@ public:
     float getCut(){
         return filter.getCut();
     };
-    //void processFilter(float *channelData, int channel, int numSamples, float lfo){
-    //
-    //    float lfoAmount = (1 - lfoF.getNextSample(channel)*lfo);
-    //    filter.processFilter(channelData, channel, numSamples, lfoAmount);
-    //};
+
     float getNextFilterSample(float xn, int channel, float env, float lfo){
         float lfoAmount = (1 - lfoF.getNextSample(channel)*lfo);
         float y = filter.processSample(xn, channel, env, lfoAmount);
