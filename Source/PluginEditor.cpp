@@ -16,7 +16,8 @@ SubstractiveSynthAudioProcessorEditor::SubstractiveSynthAudioProcessorEditor (Su
 {
     // Make sure that before the constructor has finished, you've set the
     // editor's size to whatever you need it to be.
-    setSize (620, 440);
+    //setSize (620, 440);
+    setSize (620, 380); //hidden keyboard
     //customLook.setColour(juce::Slider::ColourIds::thumbColourId,juce::Colours::darkred);
     customLook.setColour(juce::Slider::ColourIds::thumbColourId,juce::Colour(165,60,55));
     customLook.setColour(juce::Slider::ColourIds::backgroundColourId,juce::Colour(94,87,83));
@@ -425,7 +426,8 @@ void SubstractiveSynthAudioProcessorEditor::resized()
     int buttonSHeight = 34;
     
     //Keyboard
-    keyboardComponent.setBounds(0, getHeight()-keyboardHeight, keyboardWidth, keyboardHeight);
+    //keyboardComponent.setBounds(0, getHeight()-keyboardHeight, keyboardWidth, keyboardHeight);
+    //keyboard hidden
     
     //VCF
     cutKnob.setBounds(175, 265,knobWidth,knobHeight);
@@ -610,7 +612,7 @@ void SubstractiveSynthAudioProcessorEditor::handleNoteOn (juce::MidiKeyboardStat
     float nota = 0.0;
     nota = juce::MidiMessage::getMidiNoteInHertz (midiNoteNumber);
     //printf("Calculated frequency %f\n",nota);
-    audioProcessor.setVelocity(1.f);
+    audioProcessor.setVelocity(0.2f);
     audioProcessor.addVoice(nota);
 }
 void SubstractiveSynthAudioProcessorEditor::handleNoteOff (juce::MidiKeyboardState* source, int midiChannel, int midiNoteNumber, float velocity)

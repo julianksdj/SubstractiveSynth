@@ -224,6 +224,8 @@ void SubstractiveSynthAudioProcessor::processBlock (juce::AudioBuffer<float>& bu
         if (currentMessage.isNoteOn()) // note pressed
         {
             velocity = currentMessage.getVelocity() / 127.f;
+            float nota = currentMessage.getNoteNumber();
+            float notaHz = juce::MidiMessage::getMidiNoteInHertz(currentMessage.getNoteNumber());
             addVoice(juce::MidiMessage::getMidiNoteInHertz(currentMessage.getNoteNumber()));
         }
         else if (currentMessage.isNoteOff()) // note released
