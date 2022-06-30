@@ -42,8 +42,8 @@ public:
             {
 
                 currentFreq[channel] = currentFreq[channel] - envAmount*(releaseFreq[channel] - 20.f)/releaseSamples;
-                if (currentFreq[channel] < 20.f)
-                    currentFreq[channel] = 20.f;
+                if (currentFreq[channel] < 30.f)
+                    currentFreq[channel] = 30.f;
             }
             
                 

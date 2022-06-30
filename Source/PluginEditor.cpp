@@ -34,7 +34,7 @@ SubstractiveSynthAudioProcessorEditor::SubstractiveSynthAudioProcessorEditor (Su
     carrierASlider.setLookAndFeel(&customLook);
     // min  attack time must be 0.0001 (100us) to avoid attackSamples from being 0
     // so the division Aa = 0.125 / attackSamples is never inf
-    carrierASlider.setNormalisableRange(juce::NormalisableRange<double>(0.0001f, 5.f, 0.0001f, 1.f));
+    carrierASlider.setNormalisableRange(juce::NormalisableRange<double>(0.001f, 5.f, 0.0001f, 1.f));
     carrierASlider.addListener (this);
     carrierASlider.setValue(audioProcessor.getAttack());
     addAndMakeVisible (carrierALabel);
@@ -68,7 +68,7 @@ SubstractiveSynthAudioProcessorEditor::SubstractiveSynthAudioProcessorEditor (Su
     carrierRSlider.setSliderStyle(juce::Slider::SliderStyle::LinearVertical);
     addAndMakeVisible (carrierRSlider);
     carrierRSlider.setLookAndFeel(&customLook);
-    carrierRSlider.setNormalisableRange(juce::NormalisableRange<double>(0.001f, 5.f, 0.0001f, 1.f));
+    carrierRSlider.setNormalisableRange(juce::NormalisableRange<double>(0.09f, 5.f, 0.0001f, 1.f));
     carrierRSlider.addListener (this);
     carrierASlider.setValue(audioProcessor.getRelease());
     addAndMakeVisible (carrierRLabel);
@@ -78,7 +78,7 @@ SubstractiveSynthAudioProcessorEditor::SubstractiveSynthAudioProcessorEditor (Su
     //cutoff knob
     addAndMakeVisible (cutKnob);
     cutKnob.setLookAndFeel(&customLook);
-    cutKnob.setNormalisableRange(juce::NormalisableRange<double>(20.f, 20000.f, 0.01f, 1.f));
+    cutKnob.setNormalisableRange(juce::NormalisableRange<double>(35.f, 20000.f, 0.01f, 1.f));
     cutKnob.addListener (this);
     cutKnob.setValue(audioProcessor.getCut());
     cutKnob.setSkewFactorFromMidPoint(1000);
@@ -144,7 +144,7 @@ SubstractiveSynthAudioProcessorEditor::SubstractiveSynthAudioProcessorEditor (Su
     filterASlider.setLookAndFeel(&customLook);
     // min  attack time must be 0.0001 (100us) to avoid attackSamples from being 0
     // so the division Aa = 0.125 / attackSamples is never inf
-    filterASlider.setNormalisableRange(juce::NormalisableRange<double>(0.0001f, 5.f, 0.0001f, 1.f));
+    filterASlider.setNormalisableRange(juce::NormalisableRange<double>(0.001f, 5.f, 0.0001f, 1.f));
     filterASlider.addListener (this);
     filterASlider.setValue(audioProcessor.getFilterAttack());
     addAndMakeVisible (filterALabel);
@@ -180,7 +180,7 @@ SubstractiveSynthAudioProcessorEditor::SubstractiveSynthAudioProcessorEditor (Su
     filterRSlider.setSliderStyle(juce::Slider::SliderStyle::LinearVertical);
     addAndMakeVisible (filterRSlider);
     filterRSlider.setLookAndFeel(&customLook);
-    filterRSlider.setNormalisableRange(juce::NormalisableRange<double>(0.001f, 5.f, 0.0001f, 1.f));
+    filterRSlider.setNormalisableRange(juce::NormalisableRange<double>(0.09f, 5.f, 0.0001f, 1.f));
     filterRSlider.addListener (this);
     carrierASlider.setValue(audioProcessor.getFilterRelease());
     addAndMakeVisible (filterRLabel);
@@ -270,7 +270,7 @@ SubstractiveSynthAudioProcessorEditor::SubstractiveSynthAudioProcessorEditor (Su
     lfoFreqSlider.setSliderStyle(juce::Slider::SliderStyle::LinearVertical);
     addAndMakeVisible (lfoFreqSlider);
     lfoFreqSlider.setLookAndFeel(&customLook);
-    lfoFreqSlider.setNormalisableRange(juce::NormalisableRange<double>(0.1f, 50.f, 0.01f, 1.f));
+    lfoFreqSlider.setNormalisableRange(juce::NormalisableRange<double>(0.1f, 10.f, 0.01f, 1.f));
     lfoFreqSlider.addListener (this);
     lfoFreqSlider.setValue(audioProcessor.getLfoFreq());
     addAndMakeVisible (lfoFreqLabel);
@@ -281,7 +281,7 @@ SubstractiveSynthAudioProcessorEditor::SubstractiveSynthAudioProcessorEditor (Su
     lfoAmpSlider.setSliderStyle(juce::Slider::SliderStyle::LinearVertical);
     addAndMakeVisible (lfoAmpSlider);
     lfoAmpSlider.setLookAndFeel(&customLook);
-    lfoAmpSlider.setNormalisableRange(juce::NormalisableRange<double>(0.f, 1.f, 0.01f, 1.f));
+    lfoAmpSlider.setNormalisableRange(juce::NormalisableRange<double>(0.f, 0.9f, 0.01f, 1.f));
     lfoAmpSlider.addListener (this);
     lfoAmpSlider.setValue(audioProcessor.getLfoAmp());
     addAndMakeVisible (lfoAmpLabel);
@@ -292,9 +292,9 @@ SubstractiveSynthAudioProcessorEditor::SubstractiveSynthAudioProcessorEditor (Su
     lfoFilterSlider.setSliderStyle(juce::Slider::SliderStyle::LinearVertical);
     addAndMakeVisible (lfoFilterSlider);
     lfoFilterSlider.setLookAndFeel(&customLook);
-    lfoFilterSlider.setNormalisableRange(juce::NormalisableRange<double>(0.f, 1.f, 0.01f, 1.f));
+    lfoFilterSlider.setNormalisableRange(juce::NormalisableRange<double>(0.f, 0.9f, 0.01f, 1.f));
     lfoFilterSlider.addListener (this);
-    //lfoFilterSlider.setValue(audioProcessor.getLfoFilter());
+    lfoFilterSlider.setValue(audioProcessor.getLfoFiltAmp());
     addAndMakeVisible (lfoFilterLabel);
     lfoFilterLabel.setText ("LFf", juce::dontSendNotification);
     lfoFilterLabel.setJustificationType(juce::Justification::centred);
@@ -587,7 +587,7 @@ void SubstractiveSynthAudioProcessorEditor::sliderValueChanged(juce::Slider *sli
     }
     else if(slider == &lfoFilterSlider)
     {
-        audioProcessor.setLfoFilt(lfoFilterSlider.getValue());
+        audioProcessor.setLfoFiltAmp(lfoFilterSlider.getValue());
     }
     else if(slider == &delayTimeSlider)
     {
@@ -606,6 +606,7 @@ void SubstractiveSynthAudioProcessorEditor::sliderValueChanged(juce::Slider *sli
 
 void SubstractiveSynthAudioProcessorEditor::handleNoteOn (juce::MidiKeyboardState* source, int midiChannel, int midiNoteNumber, float velocity)
 {
+     //disabled keyboard
     //printf("\nNOTE PRESSED\n");
     //printf("Received note %d\n",midiNoteNumber);
     // frequency calculation from midi note data
@@ -614,12 +615,15 @@ void SubstractiveSynthAudioProcessorEditor::handleNoteOn (juce::MidiKeyboardStat
     //printf("Calculated frequency %f\n",nota);
     audioProcessor.setVelocity(0.2f);
     audioProcessor.addVoice(nota);
+     
 }
 void SubstractiveSynthAudioProcessorEditor::handleNoteOff (juce::MidiKeyboardState* source, int midiChannel, int midiNoteNumber, float velocity)
 {
+    // disabled keyboard
     auto nota = juce::MidiMessage::getMidiNoteInHertz (midiNoteNumber);
     //printf("NOTE RELEASED\n");
     audioProcessor.deactivateVoice(nota);
+    
 }
 
 void SubstractiveSynthAudioProcessorEditor::updateToggleState (juce::Button* button, juce::String name)

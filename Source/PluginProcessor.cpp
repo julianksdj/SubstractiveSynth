@@ -97,18 +97,15 @@ void SubstractiveSynthAudioProcessor::prepareToPlay (double sampleRate, int samp
     
     currentSampleRate = sampleRate;
     
-    attack = 0.0001f;
+    attack = 0.001f;
     decay = 0.0001f;
     sustain = 1.f;
-    release = 0.0001f;
+    release = 0.09f;
     
-    setCut(20000.f);
-    setRes(0.5f);
-    
-    attackF = 0.0001f;
+    attackF = 0.001f;
     decayF = 0.0001f;
     sustainF = 1.f;
-    releaseF = 0.0001f;
+    releaseF = 0.09f;
     envAmount = 0.f;
     filterEnvAmount = 0.f;
     
@@ -126,7 +123,7 @@ void SubstractiveSynthAudioProcessor::prepareToPlay (double sampleRate, int samp
     
     lfoFreq = 1.f;
     lfoAmp = 0.f;
-    lfoFilt = 0.f;
+    lfoFiltAmp = 0.f;
     
     //delay
     delay.initDelay(currentSampleRate, 300.f, 20.f, 0.f);
@@ -140,15 +137,17 @@ void SubstractiveSynthAudioProcessor::prepareToPlay (double sampleRate, int samp
     for (int i=0; i<voicesSize; i++)
     {
         voices[i].setSampleRate(currentSampleRate);
-        //voices[i].setWaveform1(waveform1);
-        //voices[i].setWaveform2(waveform2);
-        //voices[i].setFrequency(440.f, octave, semitone, fine);
+        voices[i].setWaveform1(waveform1);
+        voices[i].setWaveform2(waveform2);
+        voices[i].setFrequency(440.f, octave, semitone, fine);
         
         // Amp Envelope
-        //voices[i].setAttack(attack);
-        //voices[i].setDecay(decay);
-        //voices[i].setSustain(sustain);
-        //voices[i].setRelease(release);
+        voices[i].setAttack(attack);
+        voices[i].setDecay(decay);
+        voices[i].setSustain(sustain);
+        voices[i].setRelease(release);
+        
+        //filter
         voices[i].initFilter(cut, res);
         
         // Filter Envelope
@@ -156,7 +155,7 @@ void SubstractiveSynthAudioProcessor::prepareToPlay (double sampleRate, int samp
         voices[i].setFilterDecay(decayF);
         voices[i].setFilterSustain(sustainF);
         voices[i].setFilterRelease(releaseF);
-        voices[i].initFilterEnv(20000.f, 0.f);
+        voices[i].initFilterEnv(cut, 0.f);
         
         //Mix
         //voices[i].setMix(mix);
@@ -167,7 +166,8 @@ void SubstractiveSynthAudioProcessor::prepareToPlay (double sampleRate, int samp
         //voices[i].setWaveformLFO(3);
         
         //velocity
-        //voices[i].setVelocity(velocity);
+        voices[i].setVelocity(0.f);
+        voices[i].setNoteOn(false);
     }
     
 }

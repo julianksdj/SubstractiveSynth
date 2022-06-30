@@ -180,19 +180,21 @@ public:
     void setCut(float x)
     {
         cut = x;
-        for (auto voiceIndex = 0; voiceIndex < voicesSize; ++voiceIndex)
-        {
-            voices[voiceIndex].setCut(x);
-        }
+        // disabled because of inestability
+        //for (auto voiceIndex = 0; voiceIndex < voicesSize; ++voiceIndex)
+        //{
+            //voices[voiceIndex].setCut(x);
+        //}
     };
     void setRes(float x)
     {
         res = x;
-        for (auto voiceIndex = 0; voiceIndex < voicesSize; ++voiceIndex)
-        {
-            voices[voiceIndex].setRes(x);
-        }
-    };
+        // disabled because of inestability
+        //for (auto voiceIndex = 0; voiceIndex < voicesSize; ++voiceIndex)
+        //{
+        //    voices[voiceIndex].setRes(x);
+        //}
+    }
     float getCut()
     {
         return cut;
@@ -238,10 +240,11 @@ public:
     void setFilterEnv(float env)
     {
         filterEnvAmount = env;
-        for (auto voiceIndex = 0; voiceIndex < voicesSize; ++voiceIndex)
-        {
-            voices[voiceIndex].setFilterEnv(env);
-        }
+        // disabled because of inestability
+        //for (auto voiceIndex = 0; voiceIndex < voicesSize; ++voiceIndex)
+        //{
+        //    voices[voiceIndex].setFilterEnv(env);
+        //}
     };
     float getFilterEnv()
     {
@@ -320,8 +323,8 @@ public:
                     auto ampEnv = voices[voiceIndex].getEnvelope(channel);
                     auto filterEnv = voices[voiceIndex].getFilterEnvelope(channel);
                     auto currentSample = voices[voiceIndex].getNextSample(channel)*ampEnv*0.125f;
-                    currentSample = voices[voiceIndex].getNextFilterSample(currentSample, channel, filterEnv, lfoFilt);;
-                    sumOsc += currentSample;
+                    auto currentSample2 = voices[voiceIndex].getNextFilterSample(currentSample, channel, filterEnv, lfoFiltAmp);;
+                    sumOsc += currentSample2;
                 }
             }
             channelData[sample] += sumOsc;
@@ -337,6 +340,10 @@ public:
     {
         return lfoFreq;
     };
+    float getLfoFiltAmp()
+    {
+        return lfoFiltAmp;
+    };
     void setLfoAmp(float a)
     {
         lfoAmp = a;
@@ -345,9 +352,9 @@ public:
             voices[voiceIndex].setLfoAmp(a);
         }
     };
-    void setLfoFilt(float f)
+    void setLfoFiltAmp(float f)
     {
-        lfoFilt = f;
+        lfoFiltAmp = f;
     };
     float getLfoAmp()
     {
@@ -382,7 +389,7 @@ public:
 
         
 private:
-    float currentSampleRate = 0.0;
+    float currentSampleRate;
     Voice voices[NUM_VOICES];
     int voicesSize;
     int writeVoicePos;
@@ -398,7 +405,7 @@ private:
     float attackF, decayF, sustainF, releaseF; //filter adsr
     float mix;
     float octave[2], semitone[2], fine[2];
-    float lfoFreq, lfoAmp, lfoFilt;
+    float lfoFreq, lfoAmp, lfoFiltAmp;
     float velocity;
     Delay delay;
     int numSamples;
