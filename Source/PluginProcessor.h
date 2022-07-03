@@ -6,8 +6,6 @@
   ==============================================================================
 */
 
-#define NUM_VOICES 16
-
 #pragma once
 
 #include <JuceHeader.h>
@@ -62,83 +60,78 @@ public:
     //Voices
     int getVoicesSize()
     {
-        //return voices.size();
-        return voicesSize;
+        return voices.size();
     };
     void addVoice(float frequency)
     {
-
-        Voice voice;
-
-        voice.setNoteOn(true);
-        voice.setSampleRate(currentSampleRate);
-        voice.setWaveform1(waveform1);
-        voice.setWaveform2(waveform2);
-        voice.setFrequency(frequency, octave, semitone, fine);
-        
-        // Amp Envelope
-        voice.setAttack(attack);
-        voice.setDecay(decay);
-        voice.setSustain(sustain);
-        voice.setRelease(release);
-        
-        voice.initFilter(cut, res);
-        
-        // Filter Envelope
-        voice.setFilterAttack(attackF);
-        voice.setFilterDecay(decayF);
-        voice.setFilterSustain(sustainF);
-        voice.setFilterRelease(releaseF);
-        voice.initFilterEnv(cut, filterEnvAmount);
-        
-        //Mix
-        voice.setMix(mix);
-        
-        //LFO
-        voice.setFrequencyLFO(lfoFreq);
-        voice.setLfoAmp(lfoAmp);
-        voice.setWaveformLFO(3);
-        
-        //velocity
-        voice.setVelocity(velocity);
-        
-        
-        if (writeVoicePos >= voicesSize)
+        for (auto voiceIndex = 0; voiceIndex < voices.size(); ++voiceIndex)
         {
-            writeVoicePos = 0;
-            voices[writeVoicePos] = voice;
-        }
-        else
-        {
-            voices[writeVoicePos] = voice;
-            writeVoicePos++;
-        }
-        
-        
-
-        
-    };
-    void deactivateVoice(float freq) //release note
-    {
-        for (auto voiceIndex = 0; voiceIndex < voicesSize; ++voiceIndex)
-        {
-            if (voices[voiceIndex].getFrequency() == freq)
+            if (voices.getUnchecked(voiceIndex)->getFrequency()==frequency)
             {
-                voices[voiceIndex].setNoteOn(false);
-                voices[voiceIndex].resetEnvCount();
+                voices.remove(voiceIndex);
             }
         }
-        writeVoicePos--;
-        if(writeVoicePos<0)
-            writeVoicePos=0;
+        Voice *voice = new Voice();
+        
+        voice->setNoteOn(true);
+        voice->setSampleRate(currentSampleRate);
+        voice->setWaveform1(waveform1);
+        voice->setWaveform2(waveform2);
+        voice->setFrequency(frequency, octave, semitone, fine);
+        
+        // Amp Envelope
+        voice->setAttack(attack);
+        voice->setDecay(decay);
+        voice->setSustain(sustain);
+        voice->setRelease(release);
+        voice->initFilter(cut, res);
+        
+        // Filter Envelope
+        voice->setFilterAttack(attackF);
+        voice->setFilterDecay(decayF);
+        voice->setFilterSustain(sustainF);
+        voice->setFilterRelease(releaseF);
+        voice->initFilterEnv(cut, envAmount);
+        
+        //Mix
+        voice->setMix(mix);
+        
+        //LFO
+        voice->setFrequencyLFO(lfoFreq);
+        voice->setLfoAmp(lfoAmp);
+        voice->setWaveformLFO(3);
+        
+        //velocity
+        voice->setVelocity(velocity);
+        
+        voices.add(voice);
+    };
+    void deactivateVoice(float freq)
+    {
+        for (auto voiceIndex = 0; voiceIndex < voices.size(); ++voiceIndex)
+        {
+            //float freq2 = freq * pow(2,octave[0] + semitone[0]/12.f + fine[0]/1200.f);
+            if (voices[voiceIndex]->getFrequency() == freq)
+            {
+                voices[voiceIndex]->setNoteOn(false);
+                voices[voiceIndex]->resetEnvCount();
+            }
+        }
+    };
+    void removeVoice(float freq)
+    {
+        for (auto voiceIndex = 0; voiceIndex < voices.size(); ++voiceIndex)
+        {
+            if (voices[voiceIndex]->getFrequency() == freq)
+                voices.remove(voiceIndex);
+        }
     };
     void resetVoices()
     {
-        for (auto voiceIndex = 0; voiceIndex < voicesSize; ++voiceIndex)
+        for (auto voiceIndex = 0; voiceIndex < voices.size(); ++voiceIndex)
         {
-            voices[voiceIndex].setNoteOn(false);
-            voices[voiceIndex].resetEnvCount();
-            //writeVoicePos = 0;
+            voices[voiceIndex]->setNoteOn(false);
+            voices[voiceIndex]->resetEnvCount();
         }
     };
     
@@ -180,21 +173,19 @@ public:
     void setCut(float x)
     {
         cut = x;
-        // disabled because of inestability
-        //for (auto voiceIndex = 0; voiceIndex < voicesSize; ++voiceIndex)
-        //{
-            //voices[voiceIndex].setCut(x);
-        //}
+        for (auto voiceIndex = 0; voiceIndex < voices.size(); ++voiceIndex)
+        {
+            voices[voiceIndex]->setCut(x);
+        }
     };
     void setRes(float x)
     {
         res = x;
-        // disabled because of inestability
-        //for (auto voiceIndex = 0; voiceIndex < voicesSize; ++voiceIndex)
-        //{
-        //    voices[voiceIndex].setRes(x);
-        //}
-    }
+        for (auto voiceIndex = 0; voiceIndex < voices.size(); ++voiceIndex)
+        {
+            voices[voiceIndex]->setRes(x);
+        }
+    };
     float getCut()
     {
         return cut;
@@ -239,16 +230,23 @@ public:
     };
     void setFilterEnv(float env)
     {
-        filterEnvAmount = env;
-        // disabled because of inestability
-        //for (auto voiceIndex = 0; voiceIndex < voicesSize; ++voiceIndex)
-        //{
-        //    voices[voiceIndex].setFilterEnv(env);
-        //}
+        envAmount = env;
+        for (auto voiceIndex = 0; voiceIndex < voices.size(); ++voiceIndex)
+        {
+            voices[voiceIndex]->setFilterEnv(env);
+        }
+    };
+    void setLfoFiltAmp(float f)
+    {
+        lfoFiltAmp = f;
+    };
+    float getLfoFiltAmp()
+    {
+        return lfoFiltAmp;
     };
     float getFilterEnv()
     {
-        return filterEnvAmount;
+        return envAmount;
     };
     
     // waveforms
@@ -275,9 +273,9 @@ public:
     void setMix(float m)
     {
         mix = m;
-        for (auto voiceIndex = 0; voiceIndex < voicesSize; ++voiceIndex)
+        for (auto voiceIndex = 0; voiceIndex < voices.size(); ++voiceIndex)
         {
-            voices[voiceIndex].setMix(m);
+            voices[voiceIndex]->setMix(m);
         }
     };
     float getMix()
@@ -310,21 +308,43 @@ public:
     {
         return fine[osc];
     };
+//    void processOscAmp(float *channelData, int channel)
+//    {
+//        for (auto sample = 0; sample < numSamples; ++sample)
+//        {
+//            float sumOsc = 0.0;
+//            // sum of voices
+//            for (auto voiceIndex = 0; voiceIndex < voices.size(); ++voiceIndex)
+//            {
+//                auto* voice = voices.getUnchecked(voiceIndex);
+//                auto ampEnv = voice->getEnvelope(channel);
+//                if(voice->isActive())
+//                {
+//                    auto currentSample = voice->getNextSample(channel)*ampEnv*0.125f;
+//                    sumOsc += currentSample;
+//                }
+//                else
+//                    voices.remove(voiceIndex);
+//            }
+//            channelData[sample] += sumOsc;
+//        }
+//    };
+//
     void processOsc(float *channelData, int channel)
     {
         for (auto sample = 0; sample < numSamples; ++sample)
         {
             float sumOsc = 0.0;
             // sum of voices
-            for (auto voiceIndex = 0; voiceIndex < voicesSize; ++voiceIndex)
+            for (auto voiceIndex = 0; voiceIndex < voices.size(); ++voiceIndex)
             {
-                if(voices[voiceIndex].isActive())
+                if(voices.getUnchecked(voiceIndex)->isActive())
                 {
-                    auto ampEnv = voices[voiceIndex].getEnvelope(channel);
-                    auto filterEnv = voices[voiceIndex].getFilterEnvelope(channel);
-                    auto currentSample = voices[voiceIndex].getNextSample(channel)*ampEnv*0.125f;
-                    auto currentSample2 = voices[voiceIndex].getNextFilterSample(currentSample, channel, filterEnv, lfoFiltAmp);;
-                    sumOsc += currentSample2;
+                    auto ampEnv = voices.getUnchecked(voiceIndex)->getEnvelope(channel);
+                    auto filterEnv = voices.getUnchecked(voiceIndex)->getFilterEnvelope(channel);
+                    auto currentSample = voices.getUnchecked(voiceIndex)->getNextSample(channel)*ampEnv*0.125f;
+                    currentSample = voices.getUnchecked(voiceIndex)->getNextFilterSample(currentSample, channel, filterEnv, lfoFiltAmp);
+                    sumOsc += currentSample;
                 }
             }
             channelData[sample] += sumOsc;
@@ -340,21 +360,17 @@ public:
     {
         return lfoFreq;
     };
-    float getLfoFiltAmp()
-    {
-        return lfoFiltAmp;
-    };
     void setLfoAmp(float a)
     {
         lfoAmp = a;
-        for (auto voiceIndex = 0; voiceIndex < voicesSize; ++voiceIndex)
+        for (auto voiceIndex = 0; voiceIndex < voices.size(); ++voiceIndex)
         {
-            voices[voiceIndex].setLfoAmp(a);
+            voices[voiceIndex]->setLfoAmp(a);
         }
     };
-    void setLfoFiltAmp(float f)
+    void setLfoFilt(float f)
     {
-        lfoFiltAmp = f;
+        lfoFilt = f;
     };
     float getLfoAmp()
     {
@@ -389,10 +405,8 @@ public:
 
         
 private:
-    float currentSampleRate;
-    Voice voices[NUM_VOICES];
-    int voicesSize;
-    int writeVoicePos;
+    float currentSampleRate = 0.0;
+    juce::OwnedArray<Voice> voices; //voices array
     
     // GUI parameters
     float attack, decay, sustain, release; //amp adsr
@@ -401,14 +415,14 @@ private:
     int waveform1;
     int waveform2;
     float envAmount;
-    float filterEnvAmount;
     float attackF, decayF, sustainF, releaseF; //filter adsr
     float mix;
     float octave[2], semitone[2], fine[2];
-    float lfoFreq, lfoAmp, lfoFiltAmp;
+    float lfoFreq, lfoAmp, lfoFilt;
     float velocity;
     Delay delay;
     int numSamples;
+    float lfoFiltAmp;
     
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (SubstractiveSynthAudioProcessor)

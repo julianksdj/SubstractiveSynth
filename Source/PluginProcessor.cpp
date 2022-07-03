@@ -97,17 +97,19 @@ void SubstractiveSynthAudioProcessor::prepareToPlay (double sampleRate, int samp
     
     currentSampleRate = sampleRate;
     
-    attack = 0.001f;
+    attack = 0.0001f;
     decay = 0.0001f;
     sustain = 1.f;
-    release = 0.09f;
+    release = 0.0001f;
     
-    attackF = 0.001f;
+    setCut(20000.f);
+    setRes(0.5f);
+    
+    attackF = 0.0001f;
     decayF = 0.0001f;
     sustainF = 1.f;
-    releaseF = 0.09f;
+    releaseF = 0.0001f;
     envAmount = 0.f;
-    filterEnvAmount = 0.f;
     
     waveform1 = 1;
     waveform2 = 1;
@@ -123,52 +125,10 @@ void SubstractiveSynthAudioProcessor::prepareToPlay (double sampleRate, int samp
     
     lfoFreq = 1.f;
     lfoAmp = 0.f;
-    lfoFiltAmp = 0.f;
+    lfoFilt = 0.f;
     
     //delay
     delay.initDelay(currentSampleRate, 300.f, 20.f, 0.f);
-    
-    voicesSize = NUM_VOICES;
-    writeVoicePos = 0;
-    
-    cut = 20000.f;
-    res = 0.1f;
-    
-    for (int i=0; i<voicesSize; i++)
-    {
-        voices[i].setSampleRate(currentSampleRate);
-        voices[i].setWaveform1(waveform1);
-        voices[i].setWaveform2(waveform2);
-        voices[i].setFrequency(440.f, octave, semitone, fine);
-        
-        // Amp Envelope
-        voices[i].setAttack(attack);
-        voices[i].setDecay(decay);
-        voices[i].setSustain(sustain);
-        voices[i].setRelease(release);
-        
-        //filter
-        voices[i].initFilter(cut, res);
-        
-        // Filter Envelope
-        voices[i].setFilterAttack(attackF);
-        voices[i].setFilterDecay(decayF);
-        voices[i].setFilterSustain(sustainF);
-        voices[i].setFilterRelease(releaseF);
-        voices[i].initFilterEnv(cut, 0.f);
-        
-        //Mix
-        //voices[i].setMix(mix);
-        
-        //LFO
-        //voices[i].setFrequencyLFO(lfoFreq);
-        //voices[i].setLfoAmp(lfoAmp);
-        //voices[i].setWaveformLFO(3);
-        
-        //velocity
-        voices[i].setVelocity(0.f);
-        voices[i].setNoteOn(false);
-    }
     
 }
 
@@ -224,8 +184,6 @@ void SubstractiveSynthAudioProcessor::processBlock (juce::AudioBuffer<float>& bu
         if (currentMessage.isNoteOn()) // note pressed
         {
             velocity = currentMessage.getVelocity() / 127.f;
-            float nota = currentMessage.getNoteNumber();
-            float notaHz = juce::MidiMessage::getMidiNoteInHertz(currentMessage.getNoteNumber());
             addVoice(juce::MidiMessage::getMidiNoteInHertz(currentMessage.getNoteNumber()));
         }
         else if (currentMessage.isNoteOff()) // note released
@@ -237,10 +195,11 @@ void SubstractiveSynthAudioProcessor::processBlock (juce::AudioBuffer<float>& bu
     // AUDIO PROCESSING --------------------------------------------------------------------------------------
     for (int channel = 0; channel < totalNumOutputChannels; ++channel)
     {
-    //int channel =0;
         auto* channelData = buffer.getWritePointer(channel);
-        //oscillators + amplitude envelope + filter
+        //oscillators + amplitude envelope
         processOsc(channelData, channel);
+        //filter + filter envelope
+        //processFilter(channelData, channel, numSamples, lfoFilt);
         //delay
         delay.processDelay(channelData, channel, numSamples);
     }

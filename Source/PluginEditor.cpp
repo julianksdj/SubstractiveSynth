@@ -16,8 +16,8 @@ SubstractiveSynthAudioProcessorEditor::SubstractiveSynthAudioProcessorEditor (Su
 {
     // Make sure that before the constructor has finished, you've set the
     // editor's size to whatever you need it to be.
-    //setSize (620, 440);
-    setSize (620, 380); //hidden keyboard
+    setSize (620, 440);
+    //setSize (620, 380); //hidden keyboard
     //customLook.setColour(juce::Slider::ColourIds::thumbColourId,juce::Colours::darkred);
     customLook.setColour(juce::Slider::ColourIds::thumbColourId,juce::Colour(165,60,55));
     customLook.setColour(juce::Slider::ColourIds::backgroundColourId,juce::Colour(94,87,83));
@@ -270,7 +270,7 @@ SubstractiveSynthAudioProcessorEditor::SubstractiveSynthAudioProcessorEditor (Su
     lfoFreqSlider.setSliderStyle(juce::Slider::SliderStyle::LinearVertical);
     addAndMakeVisible (lfoFreqSlider);
     lfoFreqSlider.setLookAndFeel(&customLook);
-    lfoFreqSlider.setNormalisableRange(juce::NormalisableRange<double>(0.1f, 10.f, 0.01f, 1.f));
+    lfoFreqSlider.setNormalisableRange(juce::NormalisableRange<double>(0.1f, 20.f, 0.01f, 1.f));
     lfoFreqSlider.addListener (this);
     lfoFreqSlider.setValue(audioProcessor.getLfoFreq());
     addAndMakeVisible (lfoFreqLabel);
@@ -426,7 +426,7 @@ void SubstractiveSynthAudioProcessorEditor::resized()
     int buttonSHeight = 34;
     
     //Keyboard
-    //keyboardComponent.setBounds(0, getHeight()-keyboardHeight, keyboardWidth, keyboardHeight);
+    keyboardComponent.setBounds(0, getHeight()-keyboardHeight, keyboardWidth, keyboardHeight);
     //keyboard hidden
     
     //VCF
